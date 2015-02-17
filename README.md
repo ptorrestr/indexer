@@ -12,11 +12,12 @@ Dependencies:
 
 Execution
 ---------
-dbpedia\_indexer --url ELASTIC\_SEARCH\_URL
-                 --name ELASTIC\_SEARCH\_INDEX\_NAME
-                 --file DBPEDIA\_BZ2\_FILE
-                 --size BUFFER\_SIZE
+``dbpedia\_indexer`` requires the following parameters:
+ * `` --url`` It is the URL of the Elastic Search server.
+ * `` --name`` It is the index name where to store the data.
+ * `` --file`` It is the dbpedia bz2 file. 
+ * `` --size`` The amount of lines read from the file per call.
 
 Example:
-``LOG\_CFG='etc/logging.yaml' dbpedia\_indexer --url http://localhost:9200 --name test --file test.dat.bz2 --size 10``
+``LOG_CFG='etc/logging.yaml' dbpedia_indexer --url http://localhost:9200 --name test --file test.dat.bz2 --size 10``
 

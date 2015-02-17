@@ -19,8 +19,6 @@ class Bzip2Reader(BZ2File):
   def bytes2str(self, lines):
     return [ line.decode("utf-8") for line in lines ]
   
-    
-
 index_props = {
   "settings": {
     "index": {
@@ -29,22 +27,77 @@ index_props = {
     },
     "analysis": {
       "filter": {
-        "english_stop": {
+        "english_stop" : {
           "type": "stop",
-          "stopwords": "_english_"
+          "stopwords": "_english_",
         }
       },
       "analyzer": {
-        "english": {
-          "tokenizer":  "standard",
-          "filter": [
-            "lowercase",
-            "english_stop"
-          ]
+        "safe_keyword_analyzer": {
+          "tokenizer": "keyword",
+        },
+        "stopword_keyword_analyzer": {
+          "tokenizer": "whitespace",
+          "filter": ["lowercase", "english_stop", "porter_stem"],
+        },
+        "lemma_standard_analyzer": {
+          "tokenizer": "standard",
+          "filter": ["standard", "lowercase", "english_stop", "porter_stem"],
+        },
+      }
+    }
+  },
+  "mappings": {
+    "triple": {
+      "properties": {
+        "title": {
+          "type": "string",
+          "analyzer": "safe_keyword_analyzer",
+        },
+        "title_lowcase_lemma_stopwords" : {
+          "type": "string",
+          "analyzer": "stopword_keyword_analyzer",
+        },
+        "title_text_lemma": {
+          "type": "string",
+          "analyzer": "lemma_standard_analyzer",
+        },
+        "redir_title": {
+          "type": "string",
+          "analyzer": "safe_keyword_analyzer",
+        },
+        "redir_title_lowcase_lemma_stopwords": {
+          "type": "string",
+          "analyzer": "stopword_keyword_analyzer",
+        },
+        "redirect_title_text_lemma": {
+          "type": "string",
+          "analyzer": "lemma_standard_analyzer",
+        },
+        "dbpedia_page": {
+          "type": "string",
+          "analyzer": "safe_keyword_analyzer",
+        },
+        "dbpedia_redir_page": {
+          "type": "string",
+          "analyzer": "safe_keyword_analyzer",
+        },
+        "resource": {
+          "type": "string",
+          "analyzer": "english"
+        },
+        "predicate": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "object": {
+          "type": "string",
+          "index": "not_analyzed"
         }
       }
     }
   }
+  
 }
 
 def create_package(index_header, contents):
@@ -87,6 +140,7 @@ def index_bzip2_file(file_path, index, index_header, buffer_size):
       logger.debug(resp)
       total_lines += len(lines)
       lines = bzip_file.nextLines()
+      logger.info("%iK lines processed" % (total_lines/1000))
     bzip_file.close()
   except Exception as e:
     logger.error("Failed while reading file")

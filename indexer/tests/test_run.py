@@ -25,4 +25,5 @@ class TestRun(unittest.TestCase):
       "file_path":bzip2_file_path,
     }
     params = objects.Configuration(paramFields, rawParams)
+    indexer(None, params)
     remove_file(bzip2_file_path)

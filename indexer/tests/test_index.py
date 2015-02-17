@@ -46,6 +46,7 @@ class TestBzip2Reader(unittest.TestCase):
     remove_file(bzip2_file_path)
     self.assertEqual(totalLines, 100) 
 
+@unittest.skip("No processing")
 class TestIndexer(unittest.TestCase):
   def setUp(self):
     pass
