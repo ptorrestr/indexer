@@ -33,7 +33,7 @@ class ElasticSearch(object):
   def bulk(self, data):
     resp = self._call_endpoint('_bulk', None, data, requests.post)
     j = resp.json()
-    logger.info(j)
+    logger.debug(j)
     if j['errors']:
       raise Exception('API reports errors %s' % (resp.text))
     return j

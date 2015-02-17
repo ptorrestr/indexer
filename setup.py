@@ -20,6 +20,7 @@ setup(
     install_requires=[
       "pyaml >= 13.12.0",
       "requests >= 2.5.1",
+      "t2db_objects >= 0.6.2"
     ],
     entry_points = {
       'console_scripts':[

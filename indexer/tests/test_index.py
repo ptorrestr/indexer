@@ -5,7 +5,7 @@ import subprocess
 import os.path
 
 from indexer.index import Bzip2Reader
-from indexer.index import index_bzip_file
+from indexer.index import index_bzip2_file
 from indexer.index import index_props
 from indexer.wbservice import ElasticSearch
 from indexer.logger import setup_logging
@@ -50,7 +50,7 @@ class TestIndexer(unittest.TestCase):
   def setUp(self):
     pass
 
-  def test_index_bzip_file(self):
+  def test_index_bzip2_file(self):
     file_path = "etc/test.dat"
     index_uri = "http://localhost:9200"
     index_name = "test"
@@ -59,7 +59,7 @@ class TestIndexer(unittest.TestCase):
     bzip2_file_path = create_bzip2_file(file_path)
     es = ElasticSearch(index_uri)
     es.create_index(index_name, json.dumps(index_props))
-    n = index_bzip_file(bzip2_file_path, es, index_header, buffer_size)
+    n = index_bzip2_file(bzip2_file_path, es, index_header, buffer_size)
     es.delete_index(index_name)
     remove_file(bzip2_file_path)
     self.assertEqual(100, n)

@@ -73,7 +73,7 @@ def lines2contents(lines):
       continue
   return contents
 
-def index_bzip_file(file_path, index, index_header, buffer_size):
+def index_bzip2_file(file_path, index, index_header, buffer_size):
   logger.info("Reading file")
   try:
     bzip_file = Bzip2Reader(file_path, 'r', buffer_size)
