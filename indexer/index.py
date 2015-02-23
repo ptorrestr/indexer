@@ -1,9 +1,12 @@
 import logging
-import json
+import json 
 from bz2 import BZ2File
 from itertools import islice
 
+from hdt import dbpedia
 from indexer.wbservice import ElasticSearch
+from indexer.stanford_ner import StanfordCore
+from indexer import utils
 
 logger = logging.getLogger('indexer')
 
@@ -53,38 +56,100 @@ index_props = {
         "title": {
           "type": "string",
           "analyzer": "safe_keyword_analyzer",
+          "store" : True,
+          "copy_to" : [
+            "title_lowcase_lemma_stopwords", 
+            "title_text",
+            "title_text_lemma",
+          ]
         },
+        # META
         "title_lowcase_lemma_stopwords" : {
           "type": "string",
           "analyzer": "stopword_keyword_analyzer",
+          "store" : True,
         },
+        # META
+        "title_text" : {
+          "type": "string",
+          "store" : True,
+        },
+        # META
         "title_text_lemma": {
           "type": "string",
           "analyzer": "lemma_standard_analyzer",
+          "store" : True,
         },
         "redir_title": {
           "type": "string",
           "analyzer": "safe_keyword_analyzer",
+          "store": True,
+          "copy_to" : [
+            "redir_title_lowcase_lemma_stopwords", 
+            "redir_title_text",
+            "redirect_title_text_lemma",
+          ]
         },
+        # META
         "redir_title_lowcase_lemma_stopwords": {
           "type": "string",
           "analyzer": "stopword_keyword_analyzer",
+          "store": True,
         },
+        # META
+        "redir_title_text": {
+          "type": "string",
+          "store": True,
+        },
+        # META
         "redirect_title_text_lemma": {
           "type": "string",
           "analyzer": "lemma_standard_analyzer",
+          "store": True,
         },
         "dbpedia_page": {
           "type": "string",
           "analyzer": "safe_keyword_analyzer",
+          "store" : True,
         },
         "dbpedia_redir_page": {
           "type": "string",
           "analyzer": "safe_keyword_analyzer",
+          "store" : True,
+        },
+        "rdfs_comment": {
+          "type": "string",
+          "term_vector": "with_positions_offsets_payloads",
+          "store" : True,
+        },
+        "rdfs_comment_named_entities": {
+          "type": "string",
+          "store" : True,
+          "indexed" : False,
+        },
+        "is_disambiguation_page": {
+          "type": "boolean",
+          "store" : True,
+          "indexed" : False,
+        },
+        "disambiguates_to": {
+          "type" : "string",
+          "store" : True,
+          "indexed" : False,
+        },
+        "ambiguous_page": {
+          "type" : "string",
+          "store" : True,
+          "indexed" : False,
+        },
+        "is_disambiguation_result_page": {
+          "type" : "boolean",
+          "store" : True,
+          "indexed" : False,
         },
         "resource": {
           "type": "string",
-          "analyzer": "english"
+          "index": "not_analyzed"
         },
         "predicate": {
           "type": "string",
@@ -106,46 +171,101 @@ def create_package(index_header, contents):
     out += json.dumps(index_header) + "\n" + json.dumps(content) + "\n"
   return out
 
+def triple2document(triple, hdt, stanford_core):
+  if not "resource" in triple or not "predicate" in triple or not "object" in triple:
+    raise Exception("Data is missing")
+  uri = triple['resource']
+  title = utils.get_title_from_dbpedia_url(uri)
+  rdfs_comment = hdt.select_rdfs_comment_of_resource(uri)
+  rdfs_comment_named_entities = []
+  if rdfs_comment :
+    rdfs_comment_named_entities = stanford_core.get_named_entities(rdfs_comment)
 
-def line2content(line):
-  tokens = line.split()
-  if len (tokens) < 3:
-    raise Exception("Line has less than 3 tokens")
-  if tokens[0] == '#':
-    raise Exception("Line is a comment")
-  return { "resource":tokens[0], "predicate":tokens[1], "object":tokens[2] }
+  # base doc
+  doc = {
+    "title": title,
+    "dbpedia_page": uri,
+    "rdfs_comment": rdfs_comment,
+    "rdfs_comment_named_entities": rdfs_comment_named_entities,
+  }
 
-def lines2contents(lines):
-  contents = []
-  for line in lines:
-    try:
-      content = line2content(line)
-      contents.append(content)
-    except Exception as e:
-      logger.warning(e)
-      continue
-  return contents
+  redirected_pages = hdt.select_redirected_pages_to(uri)
+  if redirected_pages and len(redirected_pages) > 0:
+    redir_title = utils.get_titles_from_dbpedia_urls(redirected_pages)
+    doc['redir_title'] = redir_title
+    doc['dbpedia_redir_page'] = redirected_pages
+  
+  disambiguates_to = hdt.disambiguation_pages(uri)
+  is_disambiguation_page = True if disambiguates_to and len(disambiguates_to) > 0 else False
+  doc['is_disambiguation_page'] = is_disambiguation_page
+  if is_disambiguation_page:
+    doc['disambiguates_to'] = disambiguates_to
 
-def index_bzip2_file(file_path, index, index_header, buffer_size):
-  logger.info("Reading file")
+  ambiguous_page = hdt.get_ambigous_page(uri)
+  is_disambiguation_result_page = True if ambiguous_page else False
+  doc['is_disambiguation_result_page'] = is_disambiguation_result_page
+  if is_disambiguation_result_page: 
+    doc['ambiguous_page'] = ambiguous_page
+
+  return doc
+
+def triples2documents(triples, hdt, stanford_core):
+  documents = []
+  for triple in triples:
+    documents.append(triple2document(triple, hdt, stanford_core))
+  return documents
+
+def hdt2triple(triple_hdt):
+  return {'resource':triple_hdt[0], 'predicate':triple_hdt[1], 'object':triple_hdt[2] }
+
+def index_concept(triples, index, index_header, hdt, stanford_core):
+  docs = triples2documents(triples, hdt, stanford_core)
+  data = create_package(index_header, docs)
+  resp = index.bulk(data)
+  logger.debug(data)
+  
+  
+def index_hdt(file_path, index, index_header, buffer_size):
+  stanford_core = StanfordCore()
+  logger.info("Reading HDT file")
   try:
-    bzip_file = Bzip2Reader(file_path, 'r', buffer_size)
-    lines = bzip_file.nextLines()
+    hdt = dbpedia.DBpedia(file_path)
+    # Get all triples
+    it = hdt.search("", "", "")
+    done = set()
+    triple_bag = []
     total_lines = 0
-    while lines:
-      contents = lines2contents(lines)
-      data = create_package(index_header, contents)
-      logger.debug(data)
-      resp = index.bulk(data)
-      logger.debug(resp)
-      total_lines += len(lines)
-      lines = bzip_file.nextLines()
-      logger.info("%iK lines processed" % (total_lines/1000))
-    bzip_file.close()
+    total_fail_lines = 0
+    while it.has_next():
+      triple_hdt = it.next()
+      triple =  hdt2triple(triple_hdt)
+      if triple['resource'] in done:
+        logger.debug( "%s: already indexed" % triple['resource'])
+        total_fail_lines += 1
+        continue
+      if hdt.is_redirect(triple['resource']):
+        logger.debug( "%s: is redirect" % triple['resource'])
+        total_fail_lines += 1
+        continue
+      else:
+        triple_bag.append(triple)
+        if len(triple_bag) >= buffer_size:
+          total_lines += buffer_size
+          index_concept(triple_bag, index, index_header, hdt, stanford_core)
+          logger.info("%iK lines indexed" % (total_lines/1000))
+          triple_bag = []
+        done.add(triple['resource'])
+    if len(triple_bag) > 0:
+      total_lines += len(triple_bag)
+      index_concept(triple_bag, index, index_header, hdt, stanford_core)
+      triple_bag = []
+    logger.info("%i lines indexed" % (total_lines))
+    logger.info("%i lines failed" % (total_fail_lines))
+    
   except Exception as e:
-    logger.error("Failed while reading file")
+    logger.error("Failed while reading HDT file")
     logger.error(e)
     raise e
   logger.info("Done")
   return total_lines
-    
+

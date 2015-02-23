@@ -7,6 +7,7 @@ from indexer.run import paramFields
 from indexer.run import indexer
 from indexer.logger import setup_logging
 from indexer.tests.test_index import create_bzip2_file
+from indexer.tests.test_index import create_hdt_file
 from indexer.tests.test_index import remove_file
 
 setup_logging()
@@ -17,13 +18,18 @@ class TestRun(unittest.TestCase):
   def setUp(self):
     pass
 
+  #@unittest.skip("No processing")
   def test_indexer(self):
-    bzip2_file_path = create_bzip2_file("etc/test.dat")
+    file_path = "etc/test.nt"
+    bzip2_file_path = create_bzip2_file(file_path)
+    hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
     rawParams = {
       "index_url":"http://localhost:9200",
       "index_name":"test",
-      "file_path":bzip2_file_path,
+      "file_path":hdt_file_path,
+      "buffer_size":10,
     }
     params = objects.Configuration(paramFields, rawParams)
     indexer(None, params)
     remove_file(bzip2_file_path)
+    remove_file(hdt_file_path)
