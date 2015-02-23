@@ -180,6 +180,7 @@ def triple2document(triple, hdt, stanford_core):
   rdfs_comment_named_entities = []
   if rdfs_comment :
     logger.info("stanford")
+    logger.info(rdfs_comment)
     rdfs_comment_named_entities = stanford_core.get_named_entities(rdfs_comment)
     logger.info("stanford end")
 
