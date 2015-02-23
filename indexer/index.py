@@ -191,7 +191,7 @@ def triple2document(triple, hdt, stanford_core):
     "rdfs_comment": rdfs_comment,
     "rdfs_comment_named_entities": rdfs_comment_named_entities,
   }
-"""
+  """
   redirected_pages = hdt.select_redirected_pages_to(uri)
   if redirected_pages and len(redirected_pages) > 0:
     redir_title = utils.get_titles_from_dbpedia_urls(redirected_pages)
@@ -209,7 +209,7 @@ def triple2document(triple, hdt, stanford_core):
   doc['is_disambiguation_result_page'] = is_disambiguation_result_page
   if is_disambiguation_result_page: 
     doc['ambiguous_page'] = ambiguous_page
-"""
+  """
   logger.info("Doc ready")
   return doc
 
