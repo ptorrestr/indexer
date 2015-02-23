@@ -175,14 +175,13 @@ def triple2document(triple, hdt, stanford_core):
   if not "resource" in triple or not "predicate" in triple or not "object" in triple:
     raise Exception("Data is missing")
   uri = triple['resource']
-  logger.info("get_title_from_dbpedia_url")
   title = utils.get_title_from_dbpedia_url(uri)
-  logger.info("select_rdfs_comment_of_resource")
   rdfs_comment = hdt.select_rdfs_comment_of_resource(uri)
-  logger.info("get_named_entitites")
   rdfs_comment_named_entities = []
   if rdfs_comment :
+    logger.info("stanford")
     rdfs_comment_named_entities = stanford_core.get_named_entities(rdfs_comment)
+    logger.info("stanford end")
 
   # base doc
   doc = {
