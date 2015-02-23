@@ -207,6 +207,7 @@ def triple2document(triple, hdt, stanford_core):
   if is_disambiguation_result_page: 
     doc['ambiguous_page'] = ambiguous_page
 
+  logger.info("Doc ready")
   return doc
 
 def triples2documents(triples, hdt, stanford_core):

@@ -15,16 +15,20 @@ Dependencies:
  * Install normally (`python setup.py install`)
 * Stanford Ner:
  * ``pip install git+https://bitbucket.org/torotoki/corenlp-python.git``
- * Download Standford `wget http://nlp.stanford.edu/software/stanford-corenlp-full-2014-08-27.zip`
- * `unzip stanford-corenlp-full-2014-08-27.zip`
 
+
+Testing
+-------
+You must include the binary `rdf2hdt` from HDT project in the `PATH`.
+
+Testing can be done by: ``python setup.py test``
 
 Execution
 ---------
 ``dbpedia\_indexer`` requires the following parameters:
  * `` --url`` It is the URL of the Elastic Search server.
  * `` --name`` It is the index name where to store the data.
- * `` --file`` It is the dbpedia bz2 file. 
+ * `` --file`` It is the dbpedia HDT file. 
  * `` --size`` The amount of lines read from the file per call.
 
 Example:

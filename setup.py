@@ -92,7 +92,6 @@ setup(
       "requests >= 2.5.1",
       "t2db_objects >= 0.6.2",
       "hdtconnector >= 1.0",
-      "unidecode >= 0.04.17",
       "pexpect >= 3.3",
     ],
     entry_points = {
