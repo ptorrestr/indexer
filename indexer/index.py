@@ -201,8 +201,8 @@ def triple2document(triple, hdt, stanford_core):
   is_disambiguation_page = True if disambiguates_to and len(disambiguates_to) > 0 else False
   doc['is_disambiguation_page'] = is_disambiguation_page
   if is_disambiguation_page:
-    logger.info(type(disambiguates_to))
-    doc['disambiguates_to'] = disambiguates_to
+    # We transform the disambiguates_to set since sets are not json callable
+    doc['disambiguates_to'] = list(disambiguates_to)
 
   ambiguous_page = hdt.get_ambigous_page(uri)
   is_disambiguation_result_page = True if ambiguous_page else False
