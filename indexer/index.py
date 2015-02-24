@@ -180,6 +180,7 @@ def triple2document(triple, hdt, stanford_core):
   rdfs_comment = hdt.select_rdfs_comment_of_resource(uri)
   rdfs_comment_named_entities = []
   if rdfs_comment :
+    logger.info(rdfs_comment)
     rdfs_comment_named_entities = stanford_core.get_named_entities(rdfs_comment)
     # We transform the sets since sets are not json callable
     rdfs_comment_named_entities = list(rdfs_comment_named_entities)
