@@ -168,6 +168,7 @@ index_props = {
 def create_package(index_header, contents):
   out = ""
   for content in contents:
+    logger.info(content)
     out += json.dumps(index_header) + "\n" + json.dumps(content) + "\n"
   return out
 
