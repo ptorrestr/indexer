@@ -200,7 +200,7 @@ def triple2document(triple, hdt, stanford_core):
     doc['redir_title'] = redir_title
     doc['dbpedia_redir_page'] = redirected_pages
     logger.info("redir done")
-  """
+
   disambiguates_to = hdt.disambiguation_pages(uri)
   is_disambiguation_page = True if disambiguates_to and len(disambiguates_to) > 0 else False
   doc['is_disambiguation_page'] = is_disambiguation_page
@@ -212,7 +212,7 @@ def triple2document(triple, hdt, stanford_core):
   doc['is_disambiguation_result_page'] = is_disambiguation_result_page
   if is_disambiguation_result_page: 
     doc['ambiguous_page'] = ambiguous_page
-  """
+
   logger.info("Doc ready")
   return doc
 
