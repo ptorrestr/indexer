@@ -168,7 +168,6 @@ index_props = {
 def create_package(index_header, contents):
   out = ""
   for content in contents:
-    logger.info(content)
     out += json.dumps(index_header) + "\n" + json.dumps(content) + "\n"
   return out
 
@@ -202,6 +201,7 @@ def triple2document(triple, hdt, stanford_core):
   is_disambiguation_page = True if disambiguates_to and len(disambiguates_to) > 0 else False
   doc['is_disambiguation_page'] = is_disambiguation_page
   if is_disambiguation_page:
+    logger.info(type(disambiguates_to))
     doc['disambiguates_to'] = disambiguates_to
 
   ambiguous_page = hdt.get_ambigous_page(uri)
