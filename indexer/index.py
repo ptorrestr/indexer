@@ -175,16 +175,13 @@ def triple2document(triple, hdt, stanford_core):
   if not "resource" in triple or not "predicate" in triple or not "object" in triple:
     raise Exception("Data is missing")
   uri = triple['resource']
-  logger.info(uri)
   title = utils.get_title_from_dbpedia_url(uri)
   rdfs_comment = hdt.select_rdfs_comment_of_resource(uri)
   rdfs_comment_named_entities = []
   if rdfs_comment :
-    logger.info(rdfs_comment)
     rdfs_comment_named_entities = stanford_core.get_named_entities(rdfs_comment)
     # We transform the sets since sets are not json callable
     rdfs_comment_named_entities = list(rdfs_comment_named_entities)
-    logger.info("stanford end")
 
   # base doc
   doc = {
@@ -214,7 +211,6 @@ def triple2document(triple, hdt, stanford_core):
   if is_disambiguation_result_page: 
     doc['ambiguous_page'] = ambiguous_page
 
-  logger.info("Doc ready")
   return doc
 
 def triples2documents(triples, hdt, stanford_core):

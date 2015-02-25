@@ -16,17 +16,18 @@ Dependencies:
 * Stanford Ner Server:
  * In another folder, execute the following commands:
  * ``pip install git+https://bitbucket.org/torotoki/corenlp-python.git``
+ * ``echo -e "annotators = tokenize, ssplit, pos, lemma, ner\n" > corenlp-python/corenlp/default.properties``
  * ``pip install pexpect``
  * ``pip install jsonrpclib-pelix``
  * ``wget http://nlp.stanford.edu/software/stanford-corenlp-full-2014-08-27.zip``
  * ``unzip stanford-corenlp*.zip``
- * ``echo -e "from corenlp import corenlp\n corenlp.main()" > server.py``
+ * ``echo -e "from corenlp import corenlp\ncorenlp.main()" > server.py``
  * Run server: ``python server.py -S stanford-corenlp-full-2014-08-27/ -H 0.0.0.0 -p 3456``
 
 
 Testing
 -------
-You must include the binary `rdf2hdt` from HDT project in the `PATH`.
+You must include the binary `rdf2hdt` from HDT project in the `PATH`. The tests assume that a stanford NER server is running in the localhost at port 3456.
 
 Testing can be done by: ``python setup.py test``
 
