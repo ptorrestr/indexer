@@ -25,7 +25,7 @@ class StanfordCore(object):
         if not 'NamedEntityTag' in content:
           logger.warning("No namedEntityTag found on")
           logger.warning("Sentence: %s" % sentence)
-          logger.worning("Word: %s" %word)
+          logger.warning("Word: %s" %word)
           continue
         named_entity_annot = content['NamedEntityTag']
         if not named_entity_annot == "O":
