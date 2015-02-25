@@ -256,15 +256,15 @@ def index_hdt(file_path, index, index_header, buffer_size, stanford_url):
         if len(triple_bag) >= buffer_size:
           total_lines += buffer_size
           index_concept(triple_bag, index, index_header, hdt, stanford_core)
-          logger.info("%iK lines indexed" % (total_lines/1000))
+          logger.info("%.3fK lines processed, %.3fK lines indexed" % ((total_lines + total_fail_lines)/1000, total_lines/1000))
           triple_bag = []
         done.add(triple['resource'])
     if len(triple_bag) > 0:
       total_lines += len(triple_bag)
       index_concept(triple_bag, index, index_header, hdt, stanford_core)
       triple_bag = []
-    logger.info("%i lines indexed" % (total_lines))
-    logger.info("%i lines failed" % (total_fail_lines))
+    logger.info("%iK lines indexed" % (total_lines/1000))
+    logger.info("%iK lines failed" % (total_fail_lines/1000))
     
   except Exception as e:
     logger.error("Failed while reading HDT file")

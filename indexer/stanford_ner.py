@@ -23,6 +23,8 @@ class StanfordCore(object):
       current_ner = ""
       for word, content in sentence['words']:
         if not 'NamedEntityTag' in content:
+          logger.info(text)
+          logger.info(document)
           logger.info(content)
         named_entity_annot = content['NamedEntityTag']
         if not named_entity_annot == "O":
