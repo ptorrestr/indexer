@@ -233,8 +233,8 @@ def index_concept(triples, index, index_header, hdt, stanford_core):
   logger.debug(data)
   
   
-def index_hdt(file_path, index, index_header, buffer_size):
-  stanford_core = StanfordCore()
+def index_hdt(file_path, index, index_header, buffer_size, stanford_url):
+  stanford_core = StanfordCore(stanford_url)
   logger.info("Reading HDT file")
   try:
     hdt = dbpedia.DBpedia(file_path)

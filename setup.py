@@ -93,6 +93,7 @@ setup(
       "t2db_objects >= 0.6.2",
       "hdtconnector >= 1.0",
       "pexpect >= 3.3",
+      "jsonrpclib-pelix >= 0.2.4",
     ],
     entry_points = {
       'console_scripts':[

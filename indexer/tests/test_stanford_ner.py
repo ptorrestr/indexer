@@ -9,7 +9,7 @@ setup_logging()
 logger = logging.getLogger('indexer')
 logger.setLevel(logging.DEBUG)
 
-sc = StanfordCore()
+sc = StanfordCore('http://localhost:3456')
 
 text1 = 'this is an example text'
 text2 = 'London is one of the most important cities in the world'

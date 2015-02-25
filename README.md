@@ -13,8 +13,15 @@ Dependencies:
  * Clone the project: `git clone https://github.com/ptorrestr/hdt-connector`
  * Update the ENV variables in file setup.py
  * Install normally (`python setup.py install`)
-* Stanford Ner:
+* Stanford Ner Server:
+ * In another folder, execute the following commands:
  * ``pip install git+https://bitbucket.org/torotoki/corenlp-python.git``
+ * ``pip install pexpect``
+ * ``pip install jsonrpclib-pelix``
+ * ``wget http://nlp.stanford.edu/software/stanford-corenlp-full-2014-08-27.zip``
+ * ``unzip stanford-corenlp*.zip``
+ * ``echo -e "from corenlp import corenlp\n corenlp.main()" > server.py``
+ * Run server: ``python server.py -S stanford-corenlp-full-2014-08-27/ -H 0.0.0.0 -p 3456``
 
 
 Testing

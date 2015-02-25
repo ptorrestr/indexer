@@ -1,27 +1,17 @@
 import logging
-
-import stanford
-from corenlp import StanfordCoreNLP
+import jsonrpclib
+import json
 
 logger = logging.getLogger('indexer')
 
-# Singleton variable.
-stanford_core_inst = None
-
 class StanfordCore(object):
-  def __init__(self, stanford_path = None):
-    # if not stanford path is given, we use default path.
-    if not stanford_path:
-      stanford_path = stanford.get_path()
-    global stanford_core_inst
-    if not stanford_core_inst:
-      logger.info("Loading Stanford Core: %s" %(stanford_path))
-      stanford_core_inst = StanfordCoreNLP(stanford_path)
-      logger.info("Done")
-    self.stanford_core = stanford_core_inst
+  def __init__(self, stanford_url):
+    logger.info("Loading Stanford Core: %s" %(stanford_url))
+    self.stanford_core = jsonrpclib.Server(stanford_url)
+    logger.info("Done")
 
   def raw_parse(self, text):
-    return self.stanford_core.raw_parse(text)
+    return json.loads(self.stanford_core.parse(text))
 
   def get_named_entities(self, text):
     if text  == None or len(text) <= 0:

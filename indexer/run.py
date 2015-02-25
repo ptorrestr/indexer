@@ -28,6 +28,7 @@ paramFields = [
   {"name":"index_name","kind":"mandatory","type":str,"default":None,"abbr":"--name","help":"Index name"},
   {"name":"file_path","kind":"mandatory","type":str,"default":None,"abbr":"--file","help":"the HDT file"},
   {"name":"buffer_size","kind":"non-mandatory","type":int,"default":100,"abbr":"--size","help":"Buffer size"},
+  {"name":"stanford_url","kind":"mandatory","type":str,"default":None,"abbr":"--stanford-url","help":"The Stanford NER URL"},
 ]
 
 def paramFields2parser(paramFields, description, epilog):
@@ -80,4 +81,4 @@ def indexer(config, param):
   es = ElasticSearch(param.index_url)
   es.create_index(param.index_name, json.dumps(index_props))
   index_header = { "create" : { "_index": param.index_name, "_type": "triple" }}
-  n = index_hdt(param.file_path, es, index_header, param.buffer_size)
+  n = index_hdt(param.file_path, es, index_header, param.buffer_size, param.stanford_url)

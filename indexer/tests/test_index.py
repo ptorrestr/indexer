@@ -52,22 +52,23 @@ class TestBzip2Reader(unittest.TestCase):
     remove_file(bzip2_file_path)
     self.assertEqual(totalLines, 100) 
 
-@unittest.skip("No processing")
+#@unittest.skip("No processing")
 class TestIndexer(unittest.TestCase):
   def setUp(self):
     pass
 
-  def test_index_bzip2_file(self):
+  def test_index_hdt(self):
     file_path = "etc/test.nt"
     index_uri = "http://localhost:9200"
     index_name = "test"
     index_header = { "create" : { "_index": index_name, "_type": "triple" }}
     buffer_size = 10
+    stanford_url = "http://localhost:3456"
     bzip2_file_path = create_bzip2_file(file_path)
     hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
     es = ElasticSearch(index_uri)
     es.create_index(index_name, json.dumps(index_props))
-    n = index_hdt(hdt_file_path, es, index_header, buffer_size)
+    n = index_hdt(hdt_file_path, es, index_header, buffer_size, stanford_url)
     es.delete_index(index_name)
     remove_file(bzip2_file_path)
     remove_file(hdt_file_path)

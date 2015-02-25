@@ -5,6 +5,7 @@ from t2db_objects import objects
 
 from indexer.run import paramFields
 from indexer.run import indexer
+from indexer.wbservice import ElasticSearch
 from indexer.logger import setup_logging
 from indexer.tests.test_index import create_bzip2_file
 from indexer.tests.test_index import create_hdt_file
@@ -28,8 +29,11 @@ class TestRun(unittest.TestCase):
       "index_name":"test",
       "file_path":hdt_file_path,
       "buffer_size":10,
+      "stanford_url":"http://localhost:3456",
     }
     params = objects.Configuration(paramFields, rawParams)
     indexer(None, params)
+    es = ElasticSearch(params.index_url)
+    es.delete_index(params.index_name)
     remove_file(bzip2_file_path)
     remove_file(hdt_file_path)
