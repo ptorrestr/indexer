@@ -23,9 +23,10 @@ class StanfordCore(object):
       current_ner = ""
       for word, content in sentence['words']:
         if not 'NamedEntityTag' in content:
-          logger.info(text)
-          logger.info(document)
-          logger.info(content)
+          logger.warning("No namedEntityTag found on")
+          logger.warning("Sentence: %s" % sentence)
+          logger.worning("Word: %s" %word)
+          continue
         named_entity_annot = content['NamedEntityTag']
         if not named_entity_annot == "O":
           current_ner += " " + word
