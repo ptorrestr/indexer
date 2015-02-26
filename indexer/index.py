@@ -284,7 +284,7 @@ def index_hdt(file_path, index, index_header, buffer_size, stanford_url):
         triple_bag.append(triple)
         if len(triple_bag) >= buffer_size:
           total_lines += buffer_size
-          index_concept(triple_bag, index, index_header, hdt, stanford_core)
+          index_concept(triple_bag, index, index_header, hdt, stanford_url)
           logger.info("%.2fK lines processed, %.2fK lines indexed" % ((total_lines + total_fail_lines)/1000, total_lines/1000))
           triple_bag = []
         done.add(triple['resource'])
