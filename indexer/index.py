@@ -228,22 +228,25 @@ def _triples2documents(triples, hdt, stanford_url):
 def triples2documents(triples, hdt, stanford_url, thread_num = 4):
   triples_per_thread = []
   # create arrays for threads
+  output_thread = []
   for j in range(0, thread_num):
     triples_per_thread.append([])
+    output_thread.append([])
 
   # split data through threads
   for i in range(0, len(triples)):
     thread_id = i % thread_num
     triples_per_thread[thread_id].append(triples[i])
 
-  # Create threads
+  # Create structure for thread result
   documents = []
-  outputs = []
+
+  # Run
   with ThreadPoolExecutor(max_workers = 8) as e:
     for j in range(0, thread_num):
-      outputs[j] = e.submit(_triples2documents, triples_per_thread[j], hdt, stanford_url)
+      output_thread[j] = e.submit(_triples2documents, triples_per_thread[j], hdt, stanford_url)
   # Merge result
-  for output in outputs:
+  for output in output_thread:
     documents.extend(output)
     
   #for triple in triples:
