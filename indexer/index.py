@@ -223,6 +223,7 @@ def _triples2documents(triples, hdt, stanford_url):
   documents = []
   for triple in triples:
     documents.append(triple2document(triple, hdt, stanford_core)
+
   return documents
 
 def triples2documents(triples, hdt, stanford_core, thread_num = 4):
