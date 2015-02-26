@@ -8,7 +8,6 @@ class StanfordCore(object):
   def __init__(self, stanford_url):
     logger.info("Loading Stanford Core: %s" %(stanford_url))
     self.stanford_core = jsonrpclib.Server(stanford_url)
-    logger.info("Done")
 
   def raw_parse(self, text):
     return json.loads(self.stanford_core.parse(text))

@@ -247,7 +247,7 @@ def triples2documents(triples, hdt, stanford_url, thread_num = 4):
       output_thread[j] = e.submit(_triples2documents, triples_per_thread[j], hdt, stanford_url)
   # Merge result
   for output in output_thread:
-    documents.extend(output)
+    documents.extend(output.result())
     
   #for triple in triples:
   #  documents.append(triple2document(triple, hdt, stanford_core))
