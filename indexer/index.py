@@ -228,11 +228,11 @@ def _triples2documents(triples, hdt, stanford_url):
 def triples2documents(triples, hdt, stanford_core, thread_num = 4):
   triples_per_thread = []
   # create arrays for threads
-  for j in range(0, thread_num)
+  for j in range(0, thread_num):
     triples_per_thread.append([])
 
   # split data through threads
-  for i in range(0, len(triples))
+  for i in range(0, len(triples)):
     thread_id = i % thread_num
     triples_per_thread[thread_id].append(triples[i])
 
