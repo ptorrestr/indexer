@@ -231,9 +231,13 @@ def triples2documents(triples, hdt, stanford_url, thread_num = 4):
   triples_per_thread = []
   # create arrays for threads
   output_thread = []
+  base_url = "http://localhost"
+  port= 3456
+  stanford_url = []
   for j in range(0, thread_num):
     triples_per_thread.append([])
-    output_thread.append([])
+    output_thread.append([]) 
+    stanford_url.append("%s:%i" % (base_url,port + j))
 
   # split data through threads
   for i in range(0, len(triples)):
