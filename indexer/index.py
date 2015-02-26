@@ -239,7 +239,7 @@ def triples2documents(triples, hdt, stanford_core, thread_num = 4):
   # Create threads
   documents = []
   outputs = []
-  with ThreadPoolExecutor as e:
+  with ThreadPoolExecutor(max_workers = 8) as e:
     for j in range(0, thread_num):
       outputs[j] = e.submit(_triples2document, triples_per_thread[j], hdt, stanford_url)
   # Merge result
