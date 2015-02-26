@@ -1,5 +1,6 @@
 import logging
 import json 
+from concurrent.futures import ThreadPoolExecutor
 from bz2 import BZ2File
 from itertools import islice
 
@@ -217,24 +218,48 @@ def triple2document(triple, hdt, stanford_core):
 
   return doc
 
-def triples2documents(triples, hdt, stanford_core):
+def _triples2documents(triples, hdt, stanford_url):
+  stanford_core = StanfordCore(stanford_url)
   documents = []
   for triple in triples:
-    documents.append(triple2document(triple, hdt, stanford_core))
+    documents.append(triple2document(triple, hdt, stanford_core)
+  return documents
+
+def triples2documents(triples, hdt, stanford_core, thread_num = 4):
+  triples_per_thread = []
+  # create arrays for threads
+  for j in range(0, thread_num)
+    triples_per_thread.append([])
+
+  # split data through threads
+  for i in range(0, len(triples))
+    thread_id = i % thread_num
+    triples_per_thread[thread_id].append(triples[i])
+
+  # Create threads
+  documents = []
+  outputs = []
+  with ThreadPoolExecutor as e:
+    for j in range(0, thread_num):
+      outputs[j] = e.submit(_triples2document, triples_per_thread[j], hdt, stanford_url)
+  # Merge result
+  for output in outputs:
+    documents.extend(output)
+    
+  #for triple in triples:
+  #  documents.append(triple2document(triple, hdt, stanford_core))
   return documents
 
 def hdt2triple(triple_hdt):
   return {'resource':triple_hdt[0], 'predicate':triple_hdt[1], 'object':triple_hdt[2] }
 
-def index_concept(triples, index, index_header, hdt, stanford_core):
-  docs = triples2documents(triples, hdt, stanford_core)
+def index_concept(triples, index, index_header, hdt, stanford_url):
+  docs = triples2documents(triples, hdt, stanford_url)
   data = create_package(index_header, docs)
   resp = index.bulk(data)
   logger.debug(data)
   
-  
 def index_hdt(file_path, index, index_header, buffer_size, stanford_url):
-  stanford_core = StanfordCore(stanford_url)
   logger.info("Reading HDT file")
   try:
     hdt = dbpedia.DBpedia(file_path)
@@ -265,7 +290,7 @@ def index_hdt(file_path, index, index_header, buffer_size, stanford_url):
         done.add(triple['resource'])
     if len(triple_bag) > 0:
       total_lines += len(triple_bag)
-      index_concept(triple_bag, index, index_header, hdt, stanford_core)
+      index_concept(triple_bag, index, index_header, hdt, stanford_url)
       triple_bag = []
     logger.info("%iK lines indexed" % (total_lines/1000))
     logger.info("%iK lines failed" % (total_fail_lines/1000))
