@@ -179,9 +179,13 @@ def triple2document(triple, hdt, stanford_core):
   rdfs_comment = hdt.select_rdfs_comment_of_resource(uri)
   rdfs_comment_named_entities = []
   if rdfs_comment :
-    rdfs_comment_named_entities = stanford_core.get_named_entities(rdfs_comment)
-    # We transform the sets since sets are not json callable
-    rdfs_comment_named_entities = list(rdfs_comment_named_entities)
+    # If we have some error in stanford, we discard the entities.
+    try:
+      rdfs_comment_named_entities = stanford_core.get_named_entities(rdfs_comment)
+      # We transform the sets since sets are not json callable
+      rdfs_comment_named_entities = list(rdfs_comment_named_entities)
+    except Exception as e:
+      logger.warning(e)
 
   # base doc
   doc = {
@@ -256,7 +260,7 @@ def index_hdt(file_path, index, index_header, buffer_size, stanford_url):
         if len(triple_bag) >= buffer_size:
           total_lines += buffer_size
           index_concept(triple_bag, index, index_header, hdt, stanford_core)
-          logger.info("%.3fK lines processed, %.3fK lines indexed" % ((total_lines + total_fail_lines)/1000, total_lines/1000))
+          logger.info("%.2fK lines processed, %.2fK lines indexed" % ((total_lines + total_fail_lines)/1000, total_lines/1000))
           triple_bag = []
         done.add(triple['resource'])
     if len(triple_bag) > 0:
