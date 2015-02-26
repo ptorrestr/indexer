@@ -244,9 +244,8 @@ def triples2documents(triples, hdt, stanford_url, thread_num = 4):
   documents = []
 
   # Run
-  with executor as e:
-    for j in range(0, thread_num):
-      output_thread[j] = e.submit(_triples2documents, triples_per_thread[j], hdt, stanford_url)
+  for j in range(0, thread_num):
+    output_thread[j] = executor.submit(_triples2documents, triples_per_thread[j], hdt, stanford_url)
   # Merge result
   for output in output_thread:
     documents.extend(output.result())
