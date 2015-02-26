@@ -225,7 +225,7 @@ def _triples2documents(triples, hdt, stanford_url):
     documents.append(triple2document(triple, hdt, stanford_core))
   return documents
 
-def triples2documents(triples, hdt, stanford_core, thread_num = 4):
+def triples2documents(triples, hdt, stanford_url, thread_num = 4):
   triples_per_thread = []
   # create arrays for threads
   for j in range(0, thread_num):
