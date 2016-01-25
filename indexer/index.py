@@ -133,7 +133,7 @@ def index_hdt(dbpedia_file_path, index, index_header, buffer_size, stanford_url)
 def indexer(config, param):
   logger.info('Creating index %s on server %s' %(param.index_name, param.index_url))
   es = ElasticSearch(param.index_url)
-  with open('etc/dbpedia_index2.json') as data_file:    
+  with open('etc/dbpedia_index.json') as data_file:    
     data = data_file.read()
   es.create_index(param.index_name, data)
   index_header = { "create" : { "_index": param.index_name, "_type": "triple" }}

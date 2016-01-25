@@ -29,7 +29,6 @@ class DBpedia(object):
         a redirection or not. 
     """
     title = self.get_title_from_dbpedia_url(uri)
-    print("#################### " + title)
     rdfs_comment = self.select_rdfs_comment_of_resource(uri)
     rdfs_comment_named_entities = []
     if rdfs_comment :
@@ -40,34 +39,36 @@ class DBpedia(object):
         rdfs_comment_named_entities = list(rdfs_comment_named_entities)
       except Exception as e:
         logger.warning(e)
-
+      logger.info('end if')
+    logger.info('basic')
     doc = {
       "title": title,
       "dbpedia_page": uri,
       "rdfs_comment": rdfs_comment,
       "rdfs_comment_named_entities": rdfs_comment_named_entities,
     }
-
+    logger.info('redirect')
     redirected_pages = self.select_redirected_pages_to(uri)
+    logger.info('pass redirect')
     if redirected_pages and len(redirected_pages) > 0:
       redir_title = self.get_titles_from_dbpedia_urls(redirected_pages)
       # We transform the sets since sets are not json callable
       doc['redir_title'] = list(redir_title)
       doc['dbpedia_redir_page'] = list(redirected_pages)
-
+    logger.info('desambiguates')
     disambiguates_to = self.disambiguation_pages(uri)
     is_disambiguation_page = True if disambiguates_to and len(disambiguates_to) > 0 else False
     doc['is_disambiguation_page'] = is_disambiguation_page
     if is_disambiguation_page:
       # We transform the disambiguates_to set since sets are not json callable
       doc['disambiguates_to'] = list(disambiguates_to)
-
+    logger.info('ambiguous')
     ambiguous_page = self.get_ambigous_page(uri)
     is_disambiguation_result_page = True if ambiguous_page else False
     doc['is_disambiguation_result_page'] = is_disambiguation_result_page
     if is_disambiguation_result_page:
       doc['ambiguous_page'] = ambiguous_page
-
+    logger.info('Document ready')
     return doc
   
 
