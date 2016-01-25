@@ -3,17 +3,12 @@ import logging
 
 from t2db_objects import objects
 
-from indexer.run import paramFields
-from indexer.run import indexer
+from indexer.run import param_fields
+from indexer.index import indexer
 from indexer.wbservice import ElasticSearch
-from indexer.logger import setup_logging
 from indexer.tests.test_index import create_bzip2_file
 from indexer.tests.test_index import create_hdt_file
 from indexer.tests.test_index import remove_file
-
-setup_logging()
-logger = logging.getLogger('indexer')
-logger.setLevel(logging.DEBUG)
 
 class TestRun(unittest.TestCase):
   def setUp(self):
@@ -25,15 +20,15 @@ class TestRun(unittest.TestCase):
     bzip2_file_path = create_bzip2_file(file_path)
     hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
     rawParams = {
-      "index_url":"http://localhost:9200",
+      "index_url":"http://srvgal93:9200",
       "index_name":"test",
       "file_path":hdt_file_path,
       "buffer_size":10,
       "stanford_url":"http://localhost:3456",
     }
-    params = objects.Configuration(paramFields, rawParams)
+    params = objects.Configuration(param_fields, rawParams)
     indexer(None, params)
     es = ElasticSearch(params.index_url)
-    es.delete_index(params.index_name)
+    #es.delete_index(params.index_name)
     remove_file(bzip2_file_path)
     remove_file(hdt_file_path)

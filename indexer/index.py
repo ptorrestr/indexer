@@ -1,15 +1,15 @@
 import logging
 import json 
+import yaml
 from concurrent.futures import ThreadPoolExecutor
 from bz2 import BZ2File
 from itertools import islice
 
-from hdt import dbpedia
 from indexer.wbservice import ElasticSearch
 from indexer.stanford_ner import StanfordCore
-from indexer import utils
+from indexer.dbpedia import DBpedia
 
-logger = logging.getLogger('indexer')
+logger = logging.getLogger(__name__)
 
 class Bzip2Reader(BZ2File):
   def __init__(self, filename, mode='r', buffer_size = 100):
@@ -26,7 +26,7 @@ class Bzip2Reader(BZ2File):
 index_props = {
   "settings": {
     "index": {
-      "number_of_shards": 3,
+      "number_of_shards": 4,
       "number_of_replicas": 0,
     },
     "analysis": {
@@ -126,27 +126,27 @@ index_props = {
         "rdfs_comment_named_entities": {
           "type": "string",
           "store" : True,
-          "indexed" : False,
+          #"indexed" : False,
         },
         "is_disambiguation_page": {
           "type": "boolean",
           "store" : True,
-          "indexed" : False,
+          #"indexed" : False,
         },
         "disambiguates_to": {
           "type" : "string",
           "store" : True,
-          "indexed" : False,
+          #"indexed" : False,
         },
         "ambiguous_page": {
           "type" : "string",
           "store" : True,
-          "indexed" : False,
+          #"indexed" : False,
         },
         "is_disambiguation_result_page": {
           "type" : "boolean",
           "store" : True,
-          "indexed" : False,
+          #"indexed" : False,
         },
         "resource": {
           "type": "string",
@@ -172,72 +172,31 @@ def create_package(index_header, contents):
     out += json.dumps(index_header) + "\n" + json.dumps(content) + "\n"
   return out
 
-def triple2document(triple, hdt, stanford_core):
+def triple_2_document(triple, dbpedia, stanford_core):
   if not "resource" in triple or not "predicate" in triple or not "object" in triple:
     raise Exception("Data is missing")
   uri = triple['resource']
-  title = utils.get_title_from_dbpedia_url(uri)
-  rdfs_comment = hdt.select_rdfs_comment_of_resource(uri)
-  rdfs_comment_named_entities = []
-  if rdfs_comment :
-    # If we have some error in stanford, we discard the entities.
-    try:
-      rdfs_comment_named_entities = stanford_core.get_named_entities(rdfs_comment)
-      # We transform the sets since sets are not json callable
-      rdfs_comment_named_entities = list(rdfs_comment_named_entities)
-    except Exception as e:
-      logger.warning(e)
-
-  # base doc
-  doc = {
-    "title": title,
-    "dbpedia_page": uri,
-    "rdfs_comment": rdfs_comment,
-    "rdfs_comment_named_entities": rdfs_comment_named_entities,
-  }
-  
-  redirected_pages = hdt.select_redirected_pages_to(uri)
-  if redirected_pages and len(redirected_pages) > 0:
-    redir_title = utils.get_titles_from_dbpedia_urls(redirected_pages)
-    # We transform the sets since sets are not json callable
-    doc['redir_title'] = list(redir_title)
-    doc['dbpedia_redir_page'] = list(redirected_pages)
-
-  disambiguates_to = hdt.disambiguation_pages(uri)
-  is_disambiguation_page = True if disambiguates_to and len(disambiguates_to) > 0 else False
-  doc['is_disambiguation_page'] = is_disambiguation_page
-  if is_disambiguation_page:
-    # We transform the disambiguates_to set since sets are not json callable
-    doc['disambiguates_to'] = list(disambiguates_to)
-
-  ambiguous_page = hdt.get_ambigous_page(uri)
-  is_disambiguation_result_page = True if ambiguous_page else False
-  doc['is_disambiguation_result_page'] = is_disambiguation_result_page
-  if is_disambiguation_result_page: 
-    doc['ambiguous_page'] = ambiguous_page
-
+  doc = dbpedia.index_concept(uri)
   return doc
 
-def _triples2documents(triples, hdt, stanford_url):
+def _triples_2_documents(triples, dbpedia, stanford_url):
   stanford_core = StanfordCore(stanford_url)
   documents = []
   for triple in triples:
-    documents.append(triple2document(triple, hdt, stanford_core))
+    documents.append(triple_2_document(triple, dbpedia, stanford_core))
   return documents
 
-executor = ThreadPoolExecutor(max_workers = 8)
-
-def triples2documents(triples, hdt, stanford_url, thread_num = 4):
+def triples_2_documents(triples, dbpedia, stanford_url, thread_num = 1):
   triples_per_thread = []
   # create arrays for threads
   output_thread = []
   base_url = "http://localhost"
-  port= 3456
+  port= 3455
   stanford_url = []
   for j in range(0, thread_num):
     triples_per_thread.append([])
     output_thread.append([]) 
-    stanford_url.append("%s:%i" % (base_url,port + j))
+    stanford_url.append("%s:%i" % (base_url,port))
 
   # split data through threads
   for i in range(0, len(triples)):
@@ -248,8 +207,9 @@ def triples2documents(triples, hdt, stanford_url, thread_num = 4):
   documents = []
 
   # Run
-  for j in range(0, thread_num):
-    output_thread[j] = executor.submit(_triples2documents, triples_per_thread[j], hdt, stanford_url[j])
+  with ThreadPoolExecutor(max_workers = 8) as executor:
+    for j in range(0, thread_num):
+      output_thread[j] = executor.submit(_triples_2_documents, triples_per_thread[j], dbpedia, stanford_url[j])
   # Merge result
   for output in output_thread:
     documents.extend(output.result())
@@ -258,47 +218,50 @@ def triples2documents(triples, hdt, stanford_url, thread_num = 4):
   #  documents.append(triple2document(triple, hdt, stanford_core))
   return documents
 
-def hdt2triple(triple_hdt):
-  return {'resource':triple_hdt[0], 'predicate':triple_hdt[1], 'object':triple_hdt[2] }
+def entry_2_triple(entry):
+  return {'resource':entry[0], 'predicate':entry[1], 'object':entry[2] }
 
-def index_concept(triples, index, index_header, hdt, stanford_url):
-  docs = triples2documents(triples, hdt, stanford_url)
+def index_triple(triples, index, index_header, dbpedia, stanford_url):
+  docs = triples_2_documents(triples, dbpedia, stanford_url)
   data = create_package(index_header, docs)
-  resp = index.bulk(data)
   logger.debug(data)
+  resp = index.bulk(data)
+  logger.debug(resp)
   
-def index_hdt(file_path, index, index_header, buffer_size, stanford_url):
+def index_hdt(dbpedia_file_path, index, index_header, buffer_size, stanford_url):
   logger.info("Reading HDT file")
   try:
-    hdt = dbpedia.DBpedia(file_path)
+    dbpedia = DBpedia(dbpedia_file_path)
     # Get all triples
-    it = hdt.search("", "", "")
+    it = dbpedia.search("", "", "")
     done = set()
     triple_bag = []
     total_lines = 0
     total_fail_lines = 0
     while it.has_next():
-      triple_hdt = it.next()
-      triple =  hdt2triple(triple_hdt)
+      dbpedia_entry = it.next()
+      triple =  entry_2_triple(dbpedia_entry)
+      logger.info('next')
       if triple['resource'] in done:
         logger.debug( "%s: already indexed" % triple['resource'])
         total_fail_lines += 1
         continue
-      if hdt.is_redirect(triple['resource']):
+      if dbpedia.is_redirect(triple['resource']):
         logger.debug( "%s: is redirect" % triple['resource'])
         total_fail_lines += 1
         continue
       else:
+        logger.debug("adding to bug")
         triple_bag.append(triple)
         if len(triple_bag) >= buffer_size:
           total_lines += buffer_size
-          index_concept(triple_bag, index, index_header, hdt, stanford_url)
+          index_triple(triple_bag, index, index_header, dbpedia, stanford_url)
           logger.info("%.2fK lines processed, %.2fK lines indexed" % ((total_lines + total_fail_lines)/1000, total_lines/1000))
           triple_bag = []
         done.add(triple['resource'])
     if len(triple_bag) > 0:
       total_lines += len(triple_bag)
-      index_concept(triple_bag, index, index_header, hdt, stanford_url)
+      index_triple(triple_bag, index, index_header, dbpedia, stanford_url)
       triple_bag = []
     logger.info("%iK lines indexed" % (total_lines/1000))
     logger.info("%iK lines failed" % (total_fail_lines/1000))
@@ -310,3 +273,15 @@ def index_hdt(file_path, index, index_header, buffer_size, stanford_url):
   logger.info("Done")
   return total_lines
 
+def indexer(config, param):
+  logger.info('Creating index %s on server %s' %(param.index_name, param.index_url))
+  es = ElasticSearch(param.index_url)
+  with open('etc/dbpedia_index2.json') as data_file:    
+    data = data_file.read()
+  #index_props = yaml.load('etc/dbpedia_index.yaml')
+  #data = json.dumps(index_props)
+  #es.create_index(param.index_name, json.dumps(index_props))
+  es.create_index(param.index_name, data)
+  index_header = { "create" : { "_index": param.index_name, "_type": "triple" }}
+  logger.info('Open hdt file %s' %(param.file_path))
+  n = index_hdt(param.file_path, es, index_header, param.buffer_size, param.stanford_url)

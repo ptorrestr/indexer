@@ -2,14 +2,10 @@ import unittest
 import logging
 
 from indexer.stanford_ner import StanfordCore
-from indexer.logger import setup_logging
 
-setup_logging()
+logger = logging.getLogger(__file__)
 
-logger = logging.getLogger('indexer')
-logger.setLevel(logging.DEBUG)
-
-sc = StanfordCore('http://localhost:3456')
+sc = StanfordCore('http://localhost:3455')
 
 text1 = 'this is an example text'
 text2 = 'London is one of the most important cities in the world'
