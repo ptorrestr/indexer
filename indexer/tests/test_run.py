@@ -29,6 +29,6 @@ class TestRun(unittest.TestCase):
     params = objects.Configuration(param_fields, rawParams)
     indexer(None, params)
     es = ElasticSearch(params.index_url)
-    #es.delete_index(params.index_name)
+    es.delete_index(params.index_name)
     remove_file(bzip2_file_path)
     remove_file(hdt_file_path)
