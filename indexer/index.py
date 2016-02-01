@@ -26,8 +26,8 @@ class Bzip2Reader(BZ2File):
   def bytes2str(self, lines):
     return [ line.decode("utf-8") for line in lines ]
 
-def get_elastic_search_props():
-  with open('etc/dbpedia_index.json') as data_file:
+def get_elastic_search_props( file_path = 'etc/dbpedia_index.json'):
+  with open(file_path) as data_file:
     data = data_file.read()
   return data
   
@@ -109,7 +109,8 @@ def index_hdt(dbpedia_file_path, index, index_header, buffer_size, ner_url, num_
 def indexer(config, param):
   logger.info('Creating index %s on server %s' %(param.index_name, param.index_url))
   es = ElasticSearch(param.index_url)
-  data = get_elastic_search_props()
+  logger.info('Using file: %s' % param.index_config)
+  data = get_elastic_search_props(param.index_config)
   es.create_index(param.index_name, data)
   index_header = { "create" : { "_index": param.index_name, "_type": "triple" }}
   logger.info('Threads available: %i' %( param.num_threads))

@@ -26,6 +26,7 @@ class TestRun(unittest.TestCase):
       "buffer_size":10,
       "ner_url":"http://srvgal80:8888/nee",
       "num_threads":1,
+      "index_config":"etc/dbpedia_index.json",
     }
     params = objects.Configuration(param_fields, rawParams)
     indexer(None, params)

@@ -20,7 +20,8 @@ param_fields = [
   {"name":"file_path","kind":"mandatory","type":str,"default":None,"abbr":"--file","help":"the HDT file"},
   {"name":"buffer_size","kind":"non-mandatory","type":int,"default":100,"abbr":"--size","help":"Buffer size"},
   {"name":"ner_url","kind":"mandatory","type":str,"default":None,"abbr":"--ner-url","help":"The Stanford NER URL"},
-  {"name":"num_threads","kind":"non-mandatory","type":int,"default":1,"abbr":"--num-threads","help":"Number of threads"}
+  {"name":"num_threads","kind":"non-mandatory","type":int,"default":1,"abbr":"--num-threads","help":"Number of threads"},
+  {"name":"index_config","kind":"mandatory","type":str,"default":None,"abbr":"--index-config","help":"ElasticSearch configuration file"},
 ]
 
 def runIndexer():
