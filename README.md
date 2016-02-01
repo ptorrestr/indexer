@@ -29,9 +29,10 @@ Execution
  * `` --size`` The amount of lines read from the file per call.
  * `` --ner-url`` A NER REST service endpoint.
  * `` --num-threads`` Number of threads that will read the hdt file.
+ * `` --index-config`` Configuration file in json format for ElasticSearch
 
 Example:
-``LOG_CFG='etc/logging.yaml' dbpedia_indexer --url http://my-es --name test --file ~/myfile.hdt --size 1000 --ner-url http://my-server/nee --num-threads 8``
+``LOG_CFG='etc/logging.yaml' dbpedia_indexer --url http://my-es --name test --file ~/myfile.hdt --size 1000 --ner-url http://my-server/nee --num-threads 8 --index-config my_config.json``
 
 Delete Index
 ------------
