@@ -42,3 +42,7 @@ Execution
 Example:
 ``LOG_CFG='etc/logging.yaml' dbpedia_indexer --url http://localhost:9200 --name test --file test.dat.bz2 --size 10``
 
+Delete Index
+------------
+
+``curl -X DELETE srvgal93:9200/test``

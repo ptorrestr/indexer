@@ -6,7 +6,7 @@ import os.path
 
 from indexer.index import Bzip2Reader
 from indexer.index import index_hdt
-from indexer.index import index_props
+from indexer.index import get_elastic_search_props
 from indexer.wbservice import ElasticSearch
 
 logger = logging.getLogger(__file__)
@@ -63,7 +63,7 @@ class TestIndexer(unittest.TestCase):
     bzip2_file_path = create_bzip2_file(file_path)
     hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
     es = ElasticSearch(index_uri)
-    es.create_index(index_name, json.dumps(index_props))
+    es.create_index(index_name, get_elastic_search_props() )
     n = index_hdt(hdt_file_path, es, index_header, buffer_size, stanford_url)
     es.delete_index(index_name)
     remove_file(bzip2_file_path)

@@ -12,7 +12,6 @@ LABEL_PROP = "http://www.w3.org/2000/01/rdf-schema#label";
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 DCTERMS_SUBJ = "http://purl.org/dc/terms/subject";
 
-
 class DBpedia(object):
   def __init__(self, hdt_file_path):
     self.hdt = hdtconnector.HDTConnector(hdt_file_path)
@@ -24,7 +23,7 @@ class DBpedia(object):
       raise Exception("No content found for %s, %s, %s" % (uri1, uri2, uri3) )
     return it
 
-  def index_concept(self, uri):
+  def index_concept(self, uri, stanford_core):
     """ Extract indexable fields from a dbpedia uri. This method does not check whether the concept is 
         a redirection or not. 
     """
@@ -38,37 +37,31 @@ class DBpedia(object):
         # We transform the sets since sets are not json callable
         rdfs_comment_named_entities = list(rdfs_comment_named_entities)
       except Exception as e:
+        #logger.warning(rdfs_comment_named_entities)
         logger.warning(e)
-      logger.info('end if')
-    logger.info('basic')
     doc = {
       "title": title,
       "dbpedia_page": uri,
       "rdfs_comment": rdfs_comment,
       "rdfs_comment_named_entities": rdfs_comment_named_entities,
     }
-    logger.info('redirect')
     redirected_pages = self.select_redirected_pages_to(uri)
-    logger.info('pass redirect')
     if redirected_pages and len(redirected_pages) > 0:
       redir_title = self.get_titles_from_dbpedia_urls(redirected_pages)
       # We transform the sets since sets are not json callable
       doc['redir_title'] = list(redir_title)
       doc['dbpedia_redir_page'] = list(redirected_pages)
-    logger.info('desambiguates')
     disambiguates_to = self.disambiguation_pages(uri)
     is_disambiguation_page = True if disambiguates_to and len(disambiguates_to) > 0 else False
     doc['is_disambiguation_page'] = is_disambiguation_page
     if is_disambiguation_page:
       # We transform the disambiguates_to set since sets are not json callable
       doc['disambiguates_to'] = list(disambiguates_to)
-    logger.info('ambiguous')
     ambiguous_page = self.get_ambigous_page(uri)
     is_disambiguation_result_page = True if ambiguous_page else False
     doc['is_disambiguation_result_page'] = is_disambiguation_result_page
     if is_disambiguation_result_page:
       doc['ambiguous_page'] = ambiguous_page
-    logger.info('Document ready')
     return doc
   
 
@@ -85,7 +78,7 @@ class DBpedia(object):
     """ Given a list of urls, returns the titles
         The output is a list of unicode strings.
     """
-    return [ self.get_title_from_dpbedia_url(url) for url in urls ]
+    return [ self.get_title_from_dbpedia_url(url) for url in urls ]
 
   def get_definition(self, uri):
     try:
@@ -93,7 +86,7 @@ class DBpedia(object):
       triple = it.next()
       return triple[2] # object
     except Exception as e:
-      logger.warning("get_definition: %s" % e)
+      logger.debug("get_definition: %s" % e)
     return None
 
   def get_is_redirect(self, from_uri, to_uri):
@@ -101,7 +94,7 @@ class DBpedia(object):
       it = self.search(from_uri, REDIRECT_PROP, to_uri)
       return True
     except Exception as e:
-      logger.warning("get_is_redirect: %s" %e)
+      logger.debug("get_is_redirect: %s" %e)
     return False
 
   def get_dbpedia_categories_of_res(self, uri):
@@ -114,7 +107,7 @@ class DBpedia(object):
         result.add(cat)
       return result
     except Exception as e:
-      logger.warning("get_dbpedia_categories_of_res: %s" %e)
+      logger.debug("get_dbpedia_categories_of_res: %s" %e)
     return None
 
   def get_dbpedia_classes_of_res(self, uri):
@@ -127,7 +120,7 @@ class DBpedia(object):
         result.add(cat)
       return result
     except Exception as e:
-      logger.warning("get_dbpedia_classes_of_res %s" % e)
+      logger.debug("get_dbpedia_classes_of_res %s" % e)
     return None
 
   def get_dbpedia_labels(self, uri):
@@ -144,7 +137,7 @@ class DBpedia(object):
         result.add(lbl)
       return result
     except Exception as e:
-      logger.warning("get_dbpedia_labels: %s" %e)
+      logger.debug("get_dbpedia_labels: %s" %e)
     return None
 
   def disambiguation_pages(self, dbpedia_page):
@@ -157,7 +150,7 @@ class DBpedia(object):
         result.add(subj)
       return result
     except Exception as e:
-      logger.warning("disambiguation_pages: %s" % e)
+      logger.debug("disambiguation_pages: %s" % e)
     return None
 
   def get_ambigous_page(self, dbpedia_url):
@@ -168,7 +161,7 @@ class DBpedia(object):
         subj = ts[0] #subject
         return subj
     except Exception as e:
-      logger.warning("get_ambigous_page: %s" % e)
+      logger.debug("get_ambigous_page: %s" % e)
     return None
 
   def select_rdfs_comment_of_resource(self, dbpedia_page):
@@ -179,7 +172,7 @@ class DBpedia(object):
         obj = ts[2] #object 
         return obj
     except Exception as e:
-      logger.warning("select_rdfs_comment_of_resource: %s" % e)
+      logger.debug("select_rdfs_comment_of_resource: %s" % e)
     return None
 
   def is_disambiguation_page(self, dbpedia_page):
@@ -188,7 +181,7 @@ class DBpedia(object):
       while it.has_next():
         return True
     except Exception as e:
-      logger.warning("is_disambiguation_page: %s" % e)
+      logger.debug("is_disambiguation_page: %s" % e)
     return False
 
   def select_redirected_pages_to(self, dbpedia_page ):
@@ -200,7 +193,7 @@ class DBpedia(object):
         subj = ts[0] #subject
         result.add(subj)
     except Exception as e:
-      logger.warning("select_redirected_pages_to: %s" % e)
+      logger.debug("select_redirected_pages_to: %s" % e)
     return result
 
   def select_dbpedia_url_of_title(self, title):
@@ -214,14 +207,14 @@ class DBpedia(object):
           and not subj.startswith("http://dbpedia.org/resource/Category:")) :
           return subj
     except Exception as e:
-      logger.warning("Query for title: " + title +"  - returned nothing")
+      logger.debug("Query for title: " + title +"  - returned nothing")
       possible_url = self.get_dbpedia_url_for_title(title)
       try:
         it = self.search(possible_url, "", "")
         if it.has_next():
           return possible_url
       except Exception as e:
-        logger.warning("Query for the url: " + possible_url + " - returned nothing")
+        logger.debug("Query for the url: " + possible_url + " - returned nothing")
 
   def get_dbpedia_url_for_title(self, title):
     result = title.replace(" ", "_")
@@ -233,5 +226,5 @@ class DBpedia(object):
       if it.has_next():
         return True
     except Exception as e:
-      logger.warning("is_redirect: %s" % e)
+      logger.debug("is_redirect: %s" % e)
     return False
