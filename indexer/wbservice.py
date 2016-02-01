@@ -10,9 +10,9 @@ class WebService(object):
   def __init__(self, base_url):
     self.base_url = base_url
 
-  def _call_endpoint(self, name, params, data, method):
+  def _call_endpoint(self, name, params, data, method, headers):
     endpoint = self._endpoint(name)
-    resp = method(endpoint, params = params, data = data)
+    resp = method(endpoint, params = params, data = data, headers = headers)
     if resp.status_code != requests.codes.ok:
       raise Exception('API returned %s : %s' % (resp.status_code, resp.text))
     return resp
@@ -25,8 +25,12 @@ class WebService(object):
 
 
 class NERService(WebService):
-  def get_ner(self, data):
-    resp = self._call_endpoint(None, None, data, requests.post)
+  def __init__(self, base_url):
+    super(NERService, self).__init__(base_url)
+    self.headers = {'Content-type': 'application/json'}
+
+  def get_named_entities(self, data):
+    resp = self._call_endpoint(None, None, data, requests.post, self.headers)
     j = resp.json()
     # Check if a confirmation parameter is there?
     return j;
@@ -34,21 +38,21 @@ class NERService(WebService):
 # ElasticSearch API
 class ElasticSearch(WebService):
   def create_index(self, index_name, index_props):
-    resp = self._call_endpoint(index_name, None, index_props, requests.put)
+    resp = self._call_endpoint(index_name, None, index_props, requests.put, None)
     j = resp.json()
     if not j['acknowledged']:
       raise Exception('Missing api acknowledge %s' % (resp.text))
     return j
 
   def delete_index(self, index_name):
-    resp = self._call_endpoint(index_name, None, None, requests.delete)
+    resp = self._call_endpoint(index_name, None, None, requests.delete, None)
     j = resp.json()
     if not j['acknowledged']:
       raise Exception('Missing api acknowledge %s' % (resp.text))
     return j
 
   def bulk(self, data):
-    resp = self._call_endpoint('_bulk', None, data, requests.post)
+    resp = self._call_endpoint('_bulk', None, data, requests.post, None)
     j = resp.json()
     logger.debug(j)
     if j['errors']:

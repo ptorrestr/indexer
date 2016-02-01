@@ -60,11 +60,12 @@ class TestIndexer(unittest.TestCase):
     index_header = { "create" : { "_index": index_name, "_type": "triple" }}
     buffer_size = 10
     stanford_url = "http://localhost:3455"
+    num_threads = 1
     bzip2_file_path = create_bzip2_file(file_path)
     hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
     es = ElasticSearch(index_uri)
     es.create_index(index_name, get_elastic_search_props() )
-    n = index_hdt(hdt_file_path, es, index_header, buffer_size, stanford_url)
+    n = index_hdt(hdt_file_path, es, index_header, buffer_size, stanford_url, num_threads)
     es.delete_index(index_name)
     remove_file(bzip2_file_path)
     remove_file(hdt_file_path)

@@ -7,7 +7,7 @@ from itertools import islice
 from Queue import Queue
 
 from indexer.wbservice import ElasticSearch
-from indexer.stanford_ner import StanfordCore
+from indexer.wbservice import NERService
 from indexer.dbpedia import DBpedia
 
 logger = logging.getLogger(__name__)
@@ -37,20 +37,20 @@ def create_package(index_header, contents):
     out += json.dumps(index_header) + "\n" + json.dumps(content) + "\n"
   return out
 
-def triple_2_document(triple, dbpedia, stanford_core):
+def triple_2_document(triple, dbpedia, ner_core):
   if not "resource" in triple or not "predicate" in triple or not "object" in triple:
     raise Exception("Data is missing")
   uri = triple['resource']
   # set result in queue
-  result_queue.put(dbpedia.index_concept(uri, stanford_core))
+  result_queue.put(dbpedia.index_concept(uri, ner_core))
 
-def triples_2_documents(triples, dbpedia, stanford_url, thread_num = 1):
+def triples_2_documents(triples, dbpedia, ner_url, num_threads = 2):
   # create arrays for threads
-  stanford_core = StanfordCore(stanford_url)
+  ner_core = NERService(ner_url)
   # Run
-  with ThreadPoolExecutor(max_workers = thread_num) as executor:
+  with ThreadPoolExecutor(max_workers = num_threads) as executor:
     for triple in triples:
-      executor.submit(triple_2_document, triple, dbpedia, stanford_core)
+      executor.submit(triple_2_document, triple, dbpedia, ner_core)
   # get result
   documents = []
   while not result_queue.empty():
@@ -60,14 +60,14 @@ def triples_2_documents(triples, dbpedia, stanford_url, thread_num = 1):
 def entry_2_triple(entry):
   return {'resource':entry[0], 'predicate':entry[1], 'object':entry[2] }
 
-def index_triple(triples, index, index_header, dbpedia, stanford_url):
-  docs = triples_2_documents(triples, dbpedia, stanford_url)
+def index_triple(triples, index, index_header, dbpedia, ner_url, num_threads):
+  docs = triples_2_documents(triples, dbpedia, ner_url, num_threads)
   data = create_package(index_header, docs)
   logger.debug(data)
   resp = index.bulk(data)
   logger.debug(resp)
   
-def index_hdt(dbpedia_file_path, index, index_header, buffer_size, stanford_url):
+def index_hdt(dbpedia_file_path, index, index_header, buffer_size, ner_url, num_threads):
   logger.info("Reading HDT file")
   dbpedia = DBpedia(dbpedia_file_path)
   # Get all triples
@@ -92,14 +92,14 @@ def index_hdt(dbpedia_file_path, index, index_header, buffer_size, stanford_url)
       triple_bag.append(triple)
       if len(triple_bag) >= buffer_size:
         total_lines += buffer_size
-        index_triple(triple_bag, index, index_header, dbpedia, stanford_url)
+        index_triple(triple_bag, index, index_header, dbpedia, ner_url, num_threads)
         logger.info("%i triples processed, %i triples indexed" 
           % ((total_lines + total_fail_lines), total_lines))
         triple_bag = []
       done.add(triple['resource'])
   if len(triple_bag) > 0:
     total_lines += len(triple_bag)
-    index_triple(triple_bag, index, index_header, dbpedia, stanford_url)
+    index_triple(triple_bag, index, index_header, dbpedia, ner_url, num_threads)
     triple_bag = []
   logger.info("%iK triples indexed" % (total_lines/1000))
   logger.info("%iK triples failed" % (total_fail_lines/1000))
@@ -112,5 +112,6 @@ def indexer(config, param):
   data = get_elastic_search_props()
   es.create_index(param.index_name, data)
   index_header = { "create" : { "_index": param.index_name, "_type": "triple" }}
+  logger.info('Threads available: %i' %( param.num_threads))
   logger.info('Open hdt file %s' %(param.file_path))
-  n = index_hdt(param.file_path, es, index_header, param.buffer_size, param.stanford_url)
+  n = index_hdt(param.file_path, es, index_header, param.buffer_size, param.ner_url, param.num_threads)

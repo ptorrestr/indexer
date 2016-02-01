@@ -19,7 +19,8 @@ param_fields = [
   {"name":"index_name","kind":"mandatory","type":str,"default":None,"abbr":"--name","help":"Index name"},
   {"name":"file_path","kind":"mandatory","type":str,"default":None,"abbr":"--file","help":"the HDT file"},
   {"name":"buffer_size","kind":"non-mandatory","type":int,"default":100,"abbr":"--size","help":"Buffer size"},
-  {"name":"stanford_url","kind":"mandatory","type":str,"default":None,"abbr":"--stanford-url","help":"The Stanford NER URL"},
+  {"name":"ner_url","kind":"mandatory","type":str,"default":None,"abbr":"--ner-url","help":"The Stanford NER URL"},
+  {"name":"num_threads","kind":"non-mandatory","type":int,"default":1,"abbr":"--num-threads","help":"Number of threads"}
 ]
 
 def runIndexer():

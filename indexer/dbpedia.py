@@ -1,5 +1,6 @@
 import logging
 import urllib
+import json
 from hdtconnector import hdtconnector
 
 logger = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ class DBpedia(object):
       raise Exception("No content found for %s, %s, %s" % (uri1, uri2, uri3) )
     return it
 
-  def index_concept(self, uri, stanford_core):
+  def index_concept(self, uri, ner_core):
     """ Extract indexable fields from a dbpedia uri. This method does not check whether the concept is 
         a redirection or not. 
     """
@@ -33,7 +34,8 @@ class DBpedia(object):
     if rdfs_comment :
       # If we have some error in stanford, we discard the entities.
       try:
-        rdfs_comment_named_entities = stanford_core.get_named_entities(rdfs_comment)
+        resp = ner_core.get_named_entities(json.dumps([{'id':1,'id_str':'1','text':rdfs_comment}]))
+        rdfs_comment_named_entities = [ entity['name'] for entity in resp[0]['entities'] ]
         # We transform the sets since sets are not json callable
         rdfs_comment_named_entities = list(rdfs_comment_named_entities)
       except Exception as e:

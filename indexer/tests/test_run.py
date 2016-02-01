@@ -24,7 +24,8 @@ class TestRun(unittest.TestCase):
       "index_name":"test",
       "file_path":hdt_file_path,
       "buffer_size":10,
-      "stanford_url":"http://localhost:3456",
+      "ner_url":"http://srvgal80:8888/nee",
+      "num_threads":1,
     }
     params = objects.Configuration(param_fields, rawParams)
     indexer(None, params)

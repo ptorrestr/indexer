@@ -13,18 +13,6 @@ Dependencies:
  * Clone the project: `git clone https://github.com/ptorrestr/hdt-connector`
  * Update the ENV variables in file setup.py
  * Install normally (`python setup.py install`)
-* Stanford Ner Server:
- * In another folder, execute the following commands:
- * ``pip install git+https://bitbucket.org/torotoki/corenlp-python.git``
- * ``echo -e "annotators = tokenize, ssplit, pos, lemma, ner\n" > corenlp-python/corenlp/default.properties``
- * ``pip install pexpect``
- * ``pip install jsonrpclib-pelix``
- * ``pip install git+https://github.com/joshmarshall/jsonrpclib.git``
- * ``wget http://nlp.stanford.edu/software/stanford-corenlp-full-2014-08-27.zip``
- * ``unzip stanford-corenlp*.zip``
- * ``echo -e "from corenlp import corenlp\ncorenlp.main()" > server.py``
- * Run server: ``python server.py -S stanford-corenlp-full-2014-08-27/ -H 0.0.0.0 -p 3456``
-
 
 Testing
 -------
@@ -39,9 +27,11 @@ Execution
  * `` --name`` It is the index name where to store the data.
  * `` --file`` It is the dbpedia HDT file. 
  * `` --size`` The amount of lines read from the file per call.
+ * `` --ner-url`` A NER REST service endpoint.
+ * `` --num-threads`` Number of threads that will read the hdt file.
 
 Example:
-``LOG_CFG='etc/logging.yaml' dbpedia_indexer --url http://localhost:9200 --name test --file test.dat.bz2 --size 10``
+``LOG_CFG='etc/logging.yaml' dbpedia_indexer --url http://my-es --name test --file ~/myfile.hdt --size 1000 --ner-url http://my-server/nee --num-threads 8``
 
 Delete Index
 ------------
