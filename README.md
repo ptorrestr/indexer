@@ -19,6 +19,7 @@ Dependencies:
  * ``echo -e "annotators = tokenize, ssplit, pos, lemma, ner\n" > corenlp-python/corenlp/default.properties``
  * ``pip install pexpect``
  * ``pip install jsonrpclib-pelix``
+ * ``pip install git+https://github.com/joshmarshall/jsonrpclib.git``
  * ``wget http://nlp.stanford.edu/software/stanford-corenlp-full-2014-08-27.zip``
  * ``unzip stanford-corenlp*.zip``
  * ``echo -e "from corenlp import corenlp\ncorenlp.main()" > server.py``
