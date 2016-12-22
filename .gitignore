@@ -3,6 +3,9 @@
 
 *.py[cod]
 
+# HDT
+*.hdt
+
 # C extensions
 *.so
 
