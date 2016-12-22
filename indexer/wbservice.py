@@ -44,10 +44,10 @@ class NERService(WebService):
 
 # ElasticSearch API
 class ElasticSearch(WebService):
-  def __init__(self, user = None, password = None):
+  def __init__(self, base_url, user = None, password = None):
     self.user = user
     self.password = password
-    super().__init__()
+    super().__init__(base_url)
     
   def create_index(self, index_name, index_props):
     resp = self._call_endpoint(index_name, None, index_props, requests.put, None)
