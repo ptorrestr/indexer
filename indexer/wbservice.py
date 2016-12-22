@@ -1,4 +1,5 @@
 import requests
+from requests.auth import HTTPBasicAuth
 import json
 import logging
 
@@ -12,7 +13,8 @@ class WebService(object):
 
   def _call_endpoint(self, name, params, data, method, headers):
     endpoint = self._endpoint(name)
-    resp = method(endpoint, params = params, data = data, headers = headers)
+    auth = self._auth()
+    resp = method(endpoint, params = params, data = data, headers = headers, auth = auth)
     if resp.status_code != requests.codes.ok:
       raise Exception('API returned %s : %s' % (resp.status_code, resp.text))
     return resp
@@ -22,6 +24,11 @@ class WebService(object):
       return '%s' % (self.base_url)
     else:
       return '%s/%s' % (self.base_url, name)
+
+  def _auth(self):
+    #TODO: other authentication methods
+    if self.user != None and self.password != None:
+      return HTTPBasicAuth(self.user, self.password)
 
 
 class NERService(WebService):
@@ -37,6 +44,11 @@ class NERService(WebService):
 
 # ElasticSearch API
 class ElasticSearch(WebService):
+  def __init__(self, user = None, password = None):
+    self.user = user
+    self.password = password
+    super().__init__()
+    
   def create_index(self, index_name, index_props):
     resp = self._call_endpoint(index_name, None, index_props, requests.put, None)
     j = resp.json()
