@@ -2,7 +2,6 @@ import logging
 import urllib
 import json
 from hdtconnector.libhdtconnector import HDTConnector
-#from hdtconnector import hdtconnector
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +15,7 @@ DCTERMS_SUBJ = "http://purl.org/dc/terms/subject";
 
 class DBpedia(object):
   def __init__(self, hdt_file_path):
-    self.hdt = hdtconnector.HDTConnector(hdt_file_path)
+    self.hdt = HDTConnector(hdt_file_path)
 
   def search(self, uri1, uri2, uri3):
     # If we don't find any tripl, we created an exception
