@@ -1,7 +1,8 @@
 import logging
 import urllib
 import json
-from hdtconnector import hdtconnector
+from hdtconnector.libhdtconnector import HDTConnector
+#from hdtconnector import hdtconnector
 
 logger = logging.getLogger(__name__)
 
