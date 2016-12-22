@@ -4,7 +4,7 @@ import yaml
 from concurrent.futures import ThreadPoolExecutor
 from bz2 import BZ2File
 from itertools import islice
-from Queue import Queue
+from queue import Queue
 
 from indexer.wbservice import ElasticSearch
 from indexer.wbservice import NERService
