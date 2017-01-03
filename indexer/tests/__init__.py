@@ -14,22 +14,21 @@ from t2db_objects.utilities import read_env_variable
 
 setup_logging('etc/logging_debug.yaml')
 logger = logging.getLogger(__file__)
-es_server = read_env_variable('ELASTICSEARCH_DEV_URL')
 ner_server = read_env_variable('NER_DEV_URL')
 BUFFER = 1024
-base_path = "/tmp/indexer_1/"
-filename = "elasticsearch-5.1.1" 
-zip_extension = ".tar.gz"
-url_base = "https://artifacts.elastic.co/downloads/elasticsearch/"
 
-class ElasticSearch(object):
-  def __init__(self):
+class ElasticSearchTestServer(object):
+  def __init__(self, port = 9200):
     self.base_path = "/tmp/indexer_1/"
     self.filename = "elasticsearch-5.1.1" 
     self.zip_extension = ".tar.gz"
     self.url_base = "https://artifacts.elastic.co/downloads/elasticsearch/"
+    self.port = str(port)
 
-  def start(self):
+  def get_url(self):
+    return "http://localhost:" + self.port
+
+  def __enter__(self):
     if not os.path.exists(self.base_path):
       os.makedirs(self.base_path)
     if not os.path.isfile(self.base_path + self.filename + self.zip_extension):
@@ -41,11 +40,23 @@ class ElasticSearch(object):
       self.base_path + self.filename + "/bin/elasticsearch",
       "--pidfile=" + self.base_path + "server.pid",
       "-d",
+      "-Ehttp.port=" + self.port,
     ]
     call(cmd_start, cwd = self.base_path)
-    time.sleep(5)
+    self.__test__()
+    return self
 
-  def stop(self):
+  def __test__(self):
+    for i in range(0, 10):
+      time.sleep(2)
+      try:
+        resp = requests.get(self.get_url())
+        resp.raise_for_status()
+        break
+      except Exception as e:
+        pass
+
+  def __exit__(self, exc_type, exc_value, traceback):
     with open(self.base_path + "server.pid") as f:
       pid = f.read()
     cmd_stop = [
