@@ -10,21 +10,21 @@ from indexer.tests.test_index import create_bzip2_file
 from indexer.tests.test_index import create_hdt_file
 from indexer.tests.test_index import remove_file
 
+@unittest.skip("No processing")
 class TestRun(unittest.TestCase):
   def setUp(self):
     pass
 
-  #@unittest.skip("No processing")
   def test_indexer(self):
     file_path = "etc/test.nt"
     bzip2_file_path = create_bzip2_file(file_path)
     hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
     rawParams = {
-      "index_url":"http://srvgal93:9200",
+      "index_url":es_server,
       "index_name":"test",
       "file_path":hdt_file_path,
       "buffer_size":10,
-      "ner_url":"http://srvgal80:8888/nee",
+      "ner_url":ner_server,
       "num_threads":1,
       "index_config":"etc/dbpedia_index.json",
     }

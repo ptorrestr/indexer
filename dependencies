@@ -5,3 +5,4 @@ hdtconnector >= 0.2
 pexpect >= 3.3
 jsonrpclib-pelix >= 0.2.4
 futures >= 3.0.4
+tqdm >= 4.10.0

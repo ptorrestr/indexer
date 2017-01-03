@@ -14,9 +14,10 @@ class WebService(object):
   def _call_endpoint(self, name, params, data, method, headers):
     endpoint = self._endpoint(name)
     auth = self._auth()
-    resp = method(endpoint, params = params, data = data, headers = headers, auth = auth)
+    resp = method(endpoint, params = params, data = data, headers = headers )
     if resp.status_code != requests.codes.ok:
-      raise Exception('API returned %s : %s' % (resp.status_code, resp.text))
+      raise Exception('API returned %s \nURL: %s\nParams: %s\nData sent: %s \nResponse text: %s' 
+        % (resp.status_code, endpoint, params, data, resp.text))
     return resp
 
   def _endpoint(self, name = None):
@@ -29,7 +30,6 @@ class WebService(object):
     #TODO: other authentication methods
     if self.user != None and self.password != None:
       return HTTPBasicAuth(self.user, self.password)
-
 
 class NERService(WebService):
   def __init__(self, base_url):

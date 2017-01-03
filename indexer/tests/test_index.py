@@ -8,6 +8,8 @@ from indexer.index import Bzip2Reader
 from indexer.index import index_hdt
 from indexer.index import get_elastic_search_props
 from indexer.wbservice import ElasticSearch
+from indexer.tests import es_server
+from indexer.tests import ner_server
 
 logger = logging.getLogger(__file__)
 
@@ -55,17 +57,15 @@ class TestIndexer(unittest.TestCase):
 
   def test_index_hdt(self):
     file_path = "etc/test.nt"
-    index_uri = "http://srvgal93:9200"
     index_name = "test"
     index_header = { "create" : { "_index": index_name, "_type": "triple" }}
     buffer_size = 10
-    stanford_url = "http://localhost:3455"
     num_threads = 1
     bzip2_file_path = create_bzip2_file(file_path)
     hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
-    es = ElasticSearch(index_uri)
+    es = ElasticSearch(es_server)
     es.create_index(index_name, get_elastic_search_props() )
-    n = index_hdt(hdt_file_path, es, index_header, buffer_size, stanford_url, num_threads)
+    n = index_hdt(hdt_file_path, es, index_header, buffer_size, ner_server, num_threads)
     es.delete_index(index_name)
     remove_file(bzip2_file_path)
     remove_file(hdt_file_path)
