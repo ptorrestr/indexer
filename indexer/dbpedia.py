@@ -1,5 +1,4 @@
 import logging
-import urllib
 import json
 from hdtconnector.libhdtconnector import HDTConnector
 
@@ -73,7 +72,6 @@ class DBpedia(object):
     """
     s = uri.replace("http://dbpedia.org/resource/", "")
     s = s.replace("_", " ");
-    s = urllib.unquote(s) # transform into unicode
     return s
 
   def get_titles_from_dbpedia_urls(self, urls):
