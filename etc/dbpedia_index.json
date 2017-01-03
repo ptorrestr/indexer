@@ -30,7 +30,7 @@
     "triple": {
       "properties": {
         "title": {
-          "type": "string",
+          "type": "text",
           "analyzer": "safe_keyword_analyzer",
           "store" : true,
           "copy_to" : [
@@ -40,21 +40,21 @@
           ]
         },
         "title_lowcase_lemma_stopwords" : {
-          "type": "string",
+          "type": "text",
           "analyzer": "stopword_keyword_analyzer",
           "store" : true
         },
         "title_text" : {
-          "type": "string",
+          "type": "text",
           "store" : true
         },
         "title_text_lemma": {
-          "type": "string",
+          "type": "text",
           "analyzer": "lemma_standard_analyzer",
           "store" : true
         },
         "redir_title": {
-          "type": "string",
+          "type": "text",
           "analyzer": "safe_keyword_analyzer",
           "store": true,
           "copy_to" : [
@@ -64,36 +64,36 @@
           ]
         },
         "redir_title_lowcase_lemma_stopwords": {
-          "type": "string",
+          "type": "text",
           "analyzer": "stopword_keyword_analyzer",
           "store": true
         },
         "redir_title_text": {
-          "type": "string",
+          "type": "text",
           "store": true
         },
         "redirect_title_text_lemma": {
-          "type": "string",
+          "type": "text",
           "analyzer": "lemma_standard_analyzer",
           "store": true
         },
         "dbpedia_page": {
-          "type": "string",
+          "type": "text",
           "analyzer": "safe_keyword_analyzer",
           "store" : true
         },
         "dbpedia_redir_page": {
-          "type": "string",
+          "type": "text",
           "analyzer": "safe_keyword_analyzer",
           "store" : true
         },
         "rdfs_comment": {
-          "type": "string",
+          "type": "text",
           "term_vector": "with_positions_offsets_payloads",
           "store" : true
         },
         "rdfs_comment_named_entities": {
-          "type": "string",
+          "type": "text",
           "store" : true
         },
         "is_disambiguation_page": {
@@ -101,11 +101,11 @@
           "store" : true
         },
         "disambiguates_to": {
-          "type" : "string",
+          "type" : "text",
           "store" : true
         },
         "ambiguous_page": {
-          "type" : "string",
+          "type" : "text",
           "store" : true
         },
         "is_disambiguation_result_page": {
@@ -113,11 +113,11 @@
           "store" : true
         },
         "resource": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "predicate": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "object": {
