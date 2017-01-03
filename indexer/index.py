@@ -1,18 +1,16 @@
 import logging
 import json 
 import yaml
+import concurrent
 from concurrent.futures import ThreadPoolExecutor
 from bz2 import BZ2File
 from itertools import islice
-from queue import Queue
 
 from indexer.wbservice import ElasticSearch
 from indexer.wbservice import NERService
 from indexer.dbpedia import DBpedia
 
 logger = logging.getLogger(__name__)
-
-result_queue = Queue()
 
 class Bzip2Reader(BZ2File):
   def __init__(self, filename, mode='r', buffer_size = 100):
@@ -41,20 +39,27 @@ def triple_2_document(triple, dbpedia, ner_core):
   if not "resource" in triple or not "predicate" in triple or not "object" in triple:
     raise Exception("Data is missing")
   uri = triple['resource']
-  # set result in queue
-  result_queue.put(dbpedia.index_concept(uri, ner_core))
+  return dbpedia.index_concept(uri, ner_core)
 
 def triples_2_documents(triples, dbpedia, ner_url, num_threads = 2):
   # create arrays for threads
   ner_core = NERService(ner_url)
-  # Run
   with ThreadPoolExecutor(max_workers = num_threads) as executor:
-    for triple in triples:
-      executor.submit(triple_2_document, triple, dbpedia, ner_core)
-  # get result
-  documents = []
-  while not result_queue.empty():
-    documents.append(result_queue.get())
+    # Distribute tasks
+    future_to_documents = { 
+      executor.submit(triple_2_document, triple, dbpedia, ner_core) : triple 
+      for triple in triples 
+    }
+    # get result
+    documents = []
+    for future in concurrent.futures.as_completed(future_to_documents):
+      try:
+        triple = future_to_documents[future]
+        documents.append(future.result())
+      except Exception as e:
+        logger.error(e)
+        logger.error("Triple generated an error: " + triple['resource']) 
+        raise e
   return documents
 
 def entry_2_triple(entry):
