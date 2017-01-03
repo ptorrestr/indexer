@@ -9,7 +9,7 @@ from indexer.index import index_hdt
 from indexer.index import get_elastic_search_props
 from indexer.wbservice import ElasticSearch
 from indexer.tests import ElasticSearchTestServer
-from indexer.tests import ner_server
+from indexer.tests import NERTestServer
 
 logger = logging.getLogger(__file__)
 
@@ -50,7 +50,6 @@ class TestBzip2Reader(unittest.TestCase):
     remove_file(bzip2_file_path)
     self.assertEqual(totalLines, 100) 
 
-#@unittest.skip("No processing")
 class TestIndexer(unittest.TestCase):
   def setUp(self):
     pass
@@ -62,12 +61,12 @@ class TestIndexer(unittest.TestCase):
     buffer_size = 10
     num_threads = 1
     try:
-      with ElasticSearchTestServer(port = 9500) as ests:
+      with ElasticSearchTestServer(port = 9500) as ests, NERTestServer(port = 9600) as nts:
         bzip2_file_path = create_bzip2_file(file_path)
         hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
         es = ElasticSearch(ests.get_url())
         es.create_index(index_name, get_elastic_search_props() )
-        n = index_hdt(hdt_file_path, es, index_header, buffer_size, ner_server, num_threads)
+        n = index_hdt(hdt_file_path, es, index_header, buffer_size, nts.get_url(), num_threads)
         es.delete_index(index_name)
         remove_file(bzip2_file_path)
         remove_file(hdt_file_path)
