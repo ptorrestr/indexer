@@ -68,6 +68,10 @@ class NERTestServer(TestServer):
     hash_extension = None
     super(NERTestServer, self).__init__(base_path, filename, zip_extension, url_base, port, hash_extension)
 
+  def get_url(self):
+    #TODO: we have to add the path since it's hard coded in the NER code. This should be changed!
+    return "http://localhost:" + self.port + "/nee"
+
   def _start(self):
     cmd_start = [
       "/bin/bash",
@@ -86,7 +90,6 @@ class NERTestServer(TestServer):
           break
       except Exception as e:
         pass
-    print("test done")
 
   def _stop(self):
     self.proc.kill()
