@@ -61,7 +61,9 @@ def entry_2_triple(entry):
   return {'resource':entry[0], 'predicate':entry[1], 'object':entry[2] }
 
 def index_triple(triples, index, index_header, dbpedia, ner_url, num_threads):
+  print(triples)
   docs = triples_2_documents(triples, dbpedia, ner_url, num_threads)
+  print(docs)
   data = create_package(index_header, docs)
   logger.debug(data)
   resp = index.bulk(data)

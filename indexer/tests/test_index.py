@@ -60,17 +60,14 @@ class TestIndexer(unittest.TestCase):
     index_header = { "create" : { "_index": index_name, "_type": "triple" }}
     buffer_size = 10
     num_threads = 1
-    try:
-      with ElasticSearchTestServer(port = 9500) as ests, NERTestServer(port = 9600) as nts:
-        bzip2_file_path = create_bzip2_file(file_path)
-        hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
-        es = ElasticSearch(ests.get_url())
-        es.create_index(index_name, get_elastic_search_props() )
-        n = index_hdt(hdt_file_path, es, index_header, buffer_size, nts.get_url(), num_threads)
-        es.delete_index(index_name)
-        remove_file(bzip2_file_path)
-        remove_file(hdt_file_path)
-    except Exception as e:
-      logger.error(e)
+    with ElasticSearchTestServer(port = 9500) as ests, NERTestServer(port = 9600) as nts:
+      bzip2_file_path = create_bzip2_file(file_path)
+      hdt_file_path = create_hdt_file(bzip2_file_path, file_path)
+      es = ElasticSearch(ests.get_url())
+      es.create_index(index_name, get_elastic_search_props() )
+      n = index_hdt(hdt_file_path, es, index_header, buffer_size, nts.get_url(), num_threads)
+      es.delete_index(index_name)
+      remove_file(bzip2_file_path)
+      remove_file(hdt_file_path)
     self.assertEqual(19, n)
     
