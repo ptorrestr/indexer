@@ -119,7 +119,7 @@ def indexer(config, param):
   logger.info('Using file: %s' % param.index_config)
   data = get_elastic_search_props(param.index_config)
   es.create_index(param.index_name, data)
-  index_header = { "create" : { "_index": param.index_name, "_type": "triple" }}
+  index_header = { "index" : { "_index": param.index_name, "_type": "triple" }}
   logger.info('Threads available: %i' %( param.num_threads))
   logger.info('Open hdt file %s' %(param.file_path))
   n = index_hdt(param.file_path, es, index_header, param.buffer_size, param.ner_url, param.num_threads)

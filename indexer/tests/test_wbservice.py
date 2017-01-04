@@ -24,7 +24,7 @@ class TestElasticSearch(unittest.TestCase):
       with ElasticSearchTestServer(port = 9500) as ts:
         ES = ElasticSearch(ts.get_url())
         ES.create_index('test', index_props)
-        b_1 = { "create": { "_index": "test", "_type": "triple" }}
+        b_1 = { "index": { "_index": "test", "_type": "triple" }}
         s_1 = {"title":"myres1"}
         s_2 = {"title":"myres2"}
         contents = [s_1, s_2]

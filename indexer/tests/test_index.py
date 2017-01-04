@@ -57,7 +57,7 @@ class TestIndexer(unittest.TestCase):
   def test_index_hdt(self):
     file_path = "etc/test.nt"
     index_name = "test"
-    index_header = { "create" : { "_index": index_name, "_type": "triple" }}
+    index_header = { "index" : { "_index": index_name, "_type": "triple" }}
     buffer_size = 10
     num_threads = 1
     with ElasticSearchTestServer(port = 9500) as ests, NERTestServer(port = 9600) as nts:
