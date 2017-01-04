@@ -5,6 +5,7 @@
 
 # HDT
 *.hdt
+*.hdt.index
 
 # C extensions
 *.so
