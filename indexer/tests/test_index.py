@@ -11,7 +11,7 @@ from indexer.wbservice import ElasticSearch
 from indexer.tests import ElasticSearchTestServer
 from indexer.tests import NERTestServer
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 def create_bzip2_file(file_path):
   if not os.path.isfile(file_path + ".tmp.bz2"): 
@@ -55,6 +55,7 @@ class TestIndexer(unittest.TestCase):
     pass
 
   def test_index_hdt(self):
+    logger.info("asd")
     file_path = "etc/test.nt"
     index_name = "test"
     index_header = { "index" : { "_index": index_name, "_type": "triple" }}

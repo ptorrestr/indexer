@@ -6,7 +6,7 @@ from indexer.index import create_package
 from indexer.index import get_elastic_search_props
 from indexer.tests import ElasticSearchTestServer
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 index_props = get_elastic_search_props()
 
 class TestElasticSearch(unittest.TestCase):

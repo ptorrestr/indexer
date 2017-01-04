@@ -13,7 +13,7 @@ from t2db_objects.logger import setup_logging
 from t2db_objects.utilities import read_env_variable
 
 setup_logging('etc/logging_debug.yaml')
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 class TestServer(object):
   def __init__(self, base_path, filename, zip_extension, url_base, port, hash_extension, cmd_start, cmd_clean = None):
@@ -46,12 +46,15 @@ class TestServer(object):
     self._clean()
 
   def _start(self):
-    self.proc = subprocess.Popen(self.cmd_start, cwd = self.base_path + self.filename)
+    logger.info("Starting {0}".format(self.filename))
+    self.proc = subprocess.Popen(self.cmd_start, cwd = self.base_path + self.filename, 
+      stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL, stdin = subprocess.DEVNULL)
 
   def _test(self):
     pass
 
   def _stop(self):
+    logger.info("Stopping {0}".format(self.filename))
     self.proc.kill()
 
   def _clean(self):
