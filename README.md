@@ -16,7 +16,7 @@ Dependencies:
 
 Testing
 -------
-You must include the binary `rdf2hdt` from HDT project in the `PATH`. The tests assume that a stanford NER server is running in the localhost at port 3456.
+You must include the binary `rdf2hdt` from HDT project in the `PATH` and maven. Both external services (ElasticSearch and NER) will be luanched when necessary. Please have in mind that testing can take a while.
 
 Testing can be done by: ``python setup.py test``
 
