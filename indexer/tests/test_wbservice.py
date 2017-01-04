@@ -14,7 +14,7 @@ class TestElasticSearch(unittest.TestCase):
     pass
 
   def test_client(self):
-    with ElasticSearchTestServer(port = 9500) as ts:
+    with ElasticSearchTestServer(port = 11534) as ts:
       # Create index
       ES = ElasticSearch(ts.get_url())
       ES.create_index('test', index_props)
