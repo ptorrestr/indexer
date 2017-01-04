@@ -16,13 +16,15 @@ setup_logging('etc/logging_debug.yaml')
 logger = logging.getLogger(__file__)
 
 class TestServer(object):
-  def __init__(self, base_path, filename, zip_extension, url_base, port, hash_extension):
+  def __init__(self, base_path, filename, zip_extension, url_base, port, hash_extension, cmd_start, cmd_clean = None):
     self.base_path = base_path
     self.filename = filename
     self.zip_extension = zip_extension
     self.url_base = url_base
     self.port = str(port)
     self.hash_extension = hash_extension
+    self.cmd_start = cmd_start
+    self.cmd_clean = cmd_clean
 
   def __enter__(self):
     if not os.path.exists(self.base_path):
@@ -44,16 +46,18 @@ class TestServer(object):
     self._clean()
 
   def _start(self):
-    pass
+    self.proc = subprocess.Popen(self.cmd_start, cwd = self.base_path + self.filename)
 
   def _test(self):
     pass
 
   def _stop(self):
-    pass
+    self.proc.kill()
 
   def _clean(self):
-    pass
+    if self.cmd_clean:
+      clean = subprocess.Popen(self.cmd_clean, cwd = self.base_path + self.filename)
+      clean.wait()
 
   def get_url(self):
     return "http://localhost:" + self.port
@@ -65,19 +69,16 @@ class NERTestServer(TestServer):
     zip_extension = ".tar.gz"
     url_base = "http://srvgal80.deri.ie/~pabtor/"
     hash_extension = None
-    super(NERTestServer, self).__init__(base_path, filename, zip_extension, url_base, port, hash_extension)
+    cmd_start = [
+      "/bin/bash",
+      "-c",
+      "mvn -Djetty.http.port=" + str(port) + " jetty:run",
+    ]
+    super(NERTestServer, self).__init__(base_path, filename, zip_extension, url_base, port, hash_extension, cmd_start)
 
   def get_url(self):
     #TODO: we have to add the path since it's hard coded in the NER code. This should be changed!
     return "http://localhost:" + self.port + "/nee"
-
-  def _start(self):
-    cmd_start = [
-      "/bin/bash",
-      "-c",
-      "mvn -Djetty.http.port=" + self.port + " jetty:run",
-    ]
-    self.proc = subprocess.Popen(cmd_start, cwd = self.base_path + self.filename)
 
   def _test(self):
     for i in range(0, 30):
@@ -90,9 +91,6 @@ class NERTestServer(TestServer):
       except Exception as e:
         pass
 
-  def _stop(self):
-    self.proc.kill()
-
 class ElasticSearchTestServer(TestServer):
   def __init__(self, port = 9200):
     base_path = "/tmp/indexer_1/"
@@ -100,14 +98,16 @@ class ElasticSearchTestServer(TestServer):
     zip_extension = ".tar.gz"
     url_base = "https://artifacts.elastic.co/downloads/elasticsearch/"
     hash_extension = ".sha1"
-    super(ElasticSearchTestServer, self).__init__(base_path, filename, zip_extension, url_base, port, hash_extension)
-
-  def _start(self):
     cmd_start = [
-      self.base_path + self.filename + "/bin/elasticsearch",
-      "-Ehttp.port=" + self.port,
+      "bin/elasticsearch",
+      "-Ehttp.port=" + str(port),
     ]
-    self.proc = subprocess.Popen(cmd_start, cwd = self.base_path)
+    cmd_clean = [
+      "/bin/bash",
+      "-c",
+      "rm -rf ./data",
+    ]
+    super(ElasticSearchTestServer, self).__init__(base_path, filename, zip_extension, url_base, port, hash_extension, cmd_start, cmd_clean)
 
   def _test(self):
     for i in range(0, 10):
@@ -118,17 +118,6 @@ class ElasticSearchTestServer(TestServer):
         break
       except Exception as e:
         pass
-
-  def _stop(self):
-    self.proc.kill()
-
-  def _clean(self):
-    cmd_clean = [
-      "/bin/bash",
-      "-c",
-      "rm -rf " + self.base_path + self.filename + "/data",
-    ]
-    call(cmd_clean, cwd = self.base_path)
 
 BUFFER = 1024
 
