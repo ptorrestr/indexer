@@ -46,7 +46,7 @@ class TestIndexer(unittest.TestCase):
     index_header = { "index" : { "_index": index_name, "_type": "triple" }}
     buffer_size = 10
     num_threads = 1
-    with ElasticSearchTestServer(port = 9500) as ests, NERTestServer(port = 9600) as nts:
+    with ElasticSearchTestServer(port = 11534) as ests, NERTestServer(port = 11535) as nts:
       es = ElasticSearch(ests.get_url())
       es.create_index(index_name, get_elastic_search_props() )
       n = index_hdt(self.hdt_file_path, es, index_header, buffer_size, nts.get_url(), num_threads)
