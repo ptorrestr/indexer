@@ -31,7 +31,8 @@ class TestServer(object):
       os.makedirs(self.base_path)
     if not os.path.isfile(self.base_path + self.filename + self.zip_extension):
       if self.hash_extension:
-        download_file(self.filename + self.zip_extension, self.url_base, self.base_path, sha1 = self.filename + hash_extension)
+        download_file(self.filename + self.zip_extension, self.url_base, self.base_path, 
+          sha1 = self.filename + self.zip_extension + self.hash_extension)
       else:
         download_file(self.filename + self.zip_extension, self.url_base, self.base_path)
     if not os.path.exists(self.base_path + self.filename):
@@ -88,7 +89,6 @@ class NERTestServer(TestServer):
       time.sleep(2)
       try:
         resp = requests.get(self.get_url())
-        print(resp.status_code)
         if resp.status_code > 200:
           break
       except Exception as e:
