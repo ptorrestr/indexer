@@ -19,7 +19,6 @@ class TestServer(object):
   def __init__(self, base_path, filename, zip_extension, url_base, port, hash_extension):
     self.base_path = base_path
     self.filename = filename
-    self.pidfile = base_path + filename + "server.pid"
     self.zip_extension = zip_extension
     self.url_base = url_base
     self.port = str(port)
@@ -106,32 +105,22 @@ class ElasticSearchTestServer(TestServer):
   def _start(self):
     cmd_start = [
       self.base_path + self.filename + "/bin/elasticsearch",
-      "--pidfile=" + self.pidfile,
-      "-d",
       "-Ehttp.port=" + self.port,
     ]
-    call(cmd_start, cwd = self.base_path)
+    self.proc = subprocess.Popen(cmd_start, cwd = self.base_path)
 
   def _test(self):
     for i in range(0, 10):
       time.sleep(2)
       try:
         resp = requests.get(self.get_url())
-        print(resp.status)
         resp.raise_for_status()
         break
       except Exception as e:
         pass
 
   def _stop(self):
-    with open(self.pidfile) as f:
-      pid = f.read()
-    cmd_stop = [
-      "/bin/bash",
-      "-c",
-      "kill -9 " + pid,
-    ]
-    call(cmd_stop, cwd = self.base_path)
+    self.proc.kill()
 
   def _clean(self):
     cmd_clean = [
