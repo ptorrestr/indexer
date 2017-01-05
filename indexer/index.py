@@ -115,8 +115,8 @@ def index_hdt(dbpedia_file_path, index, index_header, buffer_size, ner_url, num_
 
 def indexer(config, param):
   logger.info('Creating index %s on server %s' %(param.index_name, param.index_url))
-  user = param.user if param.user != "" else None
-  password = param.user if param.user != "" else None
+  user = param.index_user if param.index_user != "" else None
+  password = param.index_password if param.index_password != "" else None
   es = ElasticSearch(param.index_url, user, password)
   logger.info('Using file: %s' % param.index_config)
   data = get_elastic_search_props(param.index_config)
