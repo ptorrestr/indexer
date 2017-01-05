@@ -97,7 +97,7 @@ def index_hdt(dbpedia_file_path, index, index_header, buffer_size, ner_url, num_
       if len(triple_bag) >= buffer_size:
         total_lines += buffer_size
         index_triple(triple_bag, index, index_header, dbpedia, ner_url, num_threads)
-        logger.info("%i triples processed, %i triples indexed" 
+        logger.info("%i triples processed, %i resources indexed" 
           % ((total_lines + total_fail_lines), total_lines))
         triple_bag = []
       done.add(triple['resource'])
@@ -105,8 +105,8 @@ def index_hdt(dbpedia_file_path, index, index_header, buffer_size, ner_url, num_
     total_lines += len(triple_bag)
     index_triple(triple_bag, index, index_header, dbpedia, ner_url, num_threads)
     triple_bag = []
-  logger.info("%iK triples indexed" % (total_lines/1000))
-  logger.info("%iK triples failed" % (total_fail_lines/1000))
+  logger.info("%iK resources indexed" % (total_lines/1000))
+  logger.info("%iK triples failed (redirect)" % (total_fail_lines/1000))
   logger.info("Done")
   return total_lines
 
