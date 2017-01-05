@@ -10,6 +10,8 @@ headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 class WebService(object):
   def __init__(self, base_url, user = None, password = None):
     self.base_url = base_url
+    if user:
+      logger.info("Using credentials (%s) to connect to %s" % (user, base_url))
     self.user = user
     self.password = password
 

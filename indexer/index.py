@@ -65,7 +65,7 @@ def triples_2_documents(triples, dbpedia, ner_url, num_threads = 2):
 def entry_2_triple(entry):
   return {'resource':entry[0], 'predicate':entry[1], 'object':entry[2] }
 
-def index_triple(triples, index, index_header, dbpedia, ner_url, num_threads):
+def index_triple(triples, index, index_header, dbpedia, ner_url, num_threads): 
   docs = triples_2_documents(triples, dbpedia, ner_url, num_threads)
   data = create_package(index_header, docs)
   logger.debug(data)
@@ -115,11 +115,14 @@ def index_hdt(dbpedia_file_path, index, index_header, buffer_size, ner_url, num_
 
 def indexer(config, param):
   logger.info('Creating index %s on server %s' %(param.index_name, param.index_url))
-  es = ElasticSearch(param.index_url)
+  user = param.user if param.user != "" else None
+  password = param.user if param.user != "" else None
+  es = ElasticSearch(param.index_url, user, password)
   logger.info('Using file: %s' % param.index_config)
   data = get_elastic_search_props(param.index_config)
   es.create_index(param.index_name, data)
   index_header = { "index" : { "_index": param.index_name, "_type": "triple" }}
   logger.info('Threads available: %i' %( param.num_threads))
   logger.info('Open hdt file %s' %(param.file_path))
-  n = index_hdt(param.file_path, es, index_header, param.buffer_size, param.ner_url, param.num_threads)
+  n = index_hdt(param.file_path, es, index_header, param.buffer_size, param.ner_url, 
+                param.num_threads)
