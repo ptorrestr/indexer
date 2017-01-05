@@ -79,36 +79,39 @@ def index_hdt(dbpedia_file_path, index, index_header, buffer_size, ner_url, num_
   it = dbpedia.search("", "", "")
   done = set()
   triple_bag = []
-  total_lines = 0
-  total_fail_lines = 0
+  num_resources_processed = 0
+  num_triples_processed = 0
+  num_triples_failed = 0
   while it.has_next():
     dbpedia_entry = it.next()
     triple =  entry_2_triple(dbpedia_entry)
+    num_triples_processed += 1
     if triple['resource'] in done:
       logger.debug( "%s: already indexed" % triple['resource'])
       continue
     if dbpedia.is_redirect(triple['resource']):
       logger.debug( "%s: is redirect" % triple['resource'])
-      total_fail_lines += 1
+      num_triples_failed += 1
       continue
     else:
-      logger.debug("adding to bug")
+      logger.debug("adding to bag")
       triple_bag.append(triple)
       if len(triple_bag) >= buffer_size:
-        total_lines += buffer_size
+        num_resources_processed += buffer_size
         index_triple(triple_bag, index, index_header, dbpedia, ner_url, num_threads)
         logger.info("%i triples processed, %i resources indexed" 
-          % ((total_lines + total_fail_lines), total_lines))
+          % (num_triples_processed, num_resources_processed))
         triple_bag = []
       done.add(triple['resource'])
   if len(triple_bag) > 0:
-    total_lines += len(triple_bag)
+    num_resources_processed += len(triple_bag)
     index_triple(triple_bag, index, index_header, dbpedia, ner_url, num_threads)
     triple_bag = []
-  logger.info("%iK resources indexed" % (total_lines/1000))
-  logger.info("%iK triples failed (redirect)" % (total_fail_lines/1000))
+  logger.info("%iK resources indexed" % (num_resources_processed/1000))
+  logger.info("%iK triples failed (redirect)" % (num_triples_failed/1000))
+  logger.info("%iK triples processed" % (num_triples_processed/1000))
   logger.info("Done")
-  return total_lines
+  return num_resources_processed
 
 def indexer(config, param):
   logger.info('Creating index %s on server %s' %(param.index_name, param.index_url))
