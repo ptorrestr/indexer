@@ -86,7 +86,6 @@ def index_hdt(dbpedia_file_path, index, index_header, buffer_size, ner_url, num_
     triple =  entry_2_triple(dbpedia_entry)
     if triple['resource'] in done:
       logger.debug( "%s: already indexed" % triple['resource'])
-      total_fail_lines += 1
       continue
     if dbpedia.is_redirect(triple['resource']):
       logger.debug( "%s: is redirect" % triple['resource'])
