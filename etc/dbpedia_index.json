@@ -123,6 +123,9 @@
         "object": {
           "type": "string",
           "index": "not_analyzed"
+        },
+        "created_at": {
+          "type": "date"
         }
       }
     }

@@ -1,5 +1,6 @@
 import logging
 import json
+import datetime
 from hdtconnector.libhdtconnector import HDTConnector
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,7 @@ class DBpedia(object):
       "dbpedia_page": uri,
       "rdfs_comment": rdfs_comment,
       "rdfs_comment_named_entities": rdfs_comment_named_entities,
+      "created_at": datetime.datetime.now().isoformat(),
     }
     redirected_pages = self.select_redirected_pages_to(uri)
     if redirected_pages and len(redirected_pages) > 0:
