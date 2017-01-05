@@ -8,8 +8,10 @@ logger = logging.getLogger('indexer')
 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
 class WebService(object):
-  def __init__(self, base_url):
+  def __init__(self, base_url, user = None, password = None):
     self.base_url = base_url
+    self.user = user
+    self.password = password
 
   def _call_endpoint(self, name, params, data, method, headers):
     endpoint = self._endpoint(name)
@@ -45,9 +47,7 @@ class NERService(WebService):
 # ElasticSearch API
 class ElasticSearch(WebService):
   def __init__(self, base_url, user = None, password = None):
-    self.user = user
-    self.password = password
-    super().__init__(base_url)
+    super().__init__(base_url, user, password)
     
   def create_index(self, index_name, index_props):
     resp = self._call_endpoint(index_name, None, index_props, requests.put, None)
