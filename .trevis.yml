@@ -1,0 +1,17 @@
+language: python
+cache:
+  directories:
+    - "$HOME/.cache/pip"
+    - "$HOME/.pyenv"
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      python: 3.4
+    - os: osx
+      language: objective-c
+      env: PYENV_VERSION=3.5.2
+install:
+  - "./.trevis/install.sh"
+script:
+  - "./.trevis/run.sh"
