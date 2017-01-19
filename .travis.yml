@@ -14,4 +14,4 @@ matrix:
 install:
   - "./.travis/install.sh"
 script:
-  - "./.travis/run.sh"
+  - python setup.py test

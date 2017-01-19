@@ -1,6 +1,7 @@
 pyaml >= 13.12.0
 requests >= 2.5.1
 t2db_objects >= 0.7.6
+hdtconnector >= 0.2
 pexpect >= 3.3
 jsonrpclib-pelix >= 0.2.4
 futures >= 3.0.4
