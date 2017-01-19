@@ -18,6 +18,7 @@ class WebService(object):
   def _call_endpoint(self, name, params, data, method, headers):
     endpoint = self._endpoint(name)
     auth = self._auth()
+    logger.debug("endpoint: {0}".format(endpoint))
     resp = method(endpoint, params = params, data = data, headers = headers )
     if resp.status_code != requests.codes.ok:
       raise Exception('API returned %s \nURL: %s\nParams: %s\nData sent: %s \nResponse text: %s' 
