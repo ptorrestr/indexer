@@ -3,10 +3,10 @@
 set -x -e
 
 
-if [[ "$TRAVIS_PYTHON_VERSION" == "osx" ]]; then
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   os="MacOSX"
 else
-  os="LINUX"
+  os="Linux"
 fi
 
 if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
