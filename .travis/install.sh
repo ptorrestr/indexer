@@ -23,5 +23,5 @@ conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
 conda install -y -n test-environment \
   hdtconnector==0.2.1
 source activate test-environment
-pip install git+https://gitlab.insight-centre.org/hujo/t2db_objects.git
+pip install git+https://github.com/ptorrestr/t2db_objects.git
 python setup.py install
