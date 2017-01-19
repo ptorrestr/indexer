@@ -9,9 +9,8 @@ matrix:
       language: generic
       env: TRAVIS_PYTHON_VERSION=3.5
     - os: osx
-      osx_image: xcode7.3
-      language: generic
-      env: TRAVIS_PYTHON_VERSION=3.5
+      language: objective-c
+      python: 3.5
 install:
   - source .travis/install.sh
 script:
