@@ -12,6 +12,6 @@ matrix:
       language: objective-c
       env: PYENV_VERSION=3.5.2
 install:
-  - "./.trevis/install.sh"
+  - "./.travis/install.sh"
 script:
-  - "./.trevis/run.sh"
+  - "./.travis/run.sh"
