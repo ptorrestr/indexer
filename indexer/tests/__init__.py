@@ -47,7 +47,7 @@ class TestServer(object):
     self._clean()
 
   def _start(self):
-    logger.info("Starting {0}".format(self.filename))
+    logger.info("Starting {0} at localhost:{1}".format(self.filename, self.port))
     self.proc = subprocess.Popen(self.cmd_start, cwd = self.base_path + self.filename, 
       stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL, stdin = subprocess.DEVNULL)
 
