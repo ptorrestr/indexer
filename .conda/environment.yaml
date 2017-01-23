@@ -9,6 +9,8 @@ dependencies:
   - setuptools
   - pyyaml
   - tqdm
+  - requests
   - pexpect
   - t2db_objects >=0.7.6
   - hdtconnector >=0.2.2
+  - pytest
