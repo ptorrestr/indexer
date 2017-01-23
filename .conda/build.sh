@@ -2,4 +2,4 @@
 
 set -x -e
 
-python setup.py install
+$PYTHON setup.py install
