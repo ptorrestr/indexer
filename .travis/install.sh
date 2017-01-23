@@ -29,7 +29,7 @@ conda config --append channels pkgw
 conda config --get channels
 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
 conda install -y -n test-environment \
-  hdtconnector>=0.2.1
+  hdtconnector>=0.2.2
 source activate test-environment
-pip install git+https://github.com/ptorrestr/t2db_objects.git
-python setup.py install
+conda build .conda/
+
