@@ -16,9 +16,6 @@ requirements:
     - zlib
     - bzip2
     - hdtconnector
-test:
-  - python setup test
-
 about:
   home: https://github/ptorrestr/indexer
   license: GPLv3
