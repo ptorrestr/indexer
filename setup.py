@@ -18,24 +18,24 @@ def version():
   return "0.0.1" #default version
 
 setup(
-        name='indexer',
-        version = version(),
-        description ='Indexer for dbpedia',
-        long_description = readme(),
-        classifiers = [
-            'Programming Language :: Python :: 3.5',
-            ],
-        url = 'http://github.com/ptorrest/indexer',
-        author = 'Pablo Torres',
-        author_email = 'pablo.torres.t@gmail.com',
-        license = 'GNU',
-        packages = ['indexer', 'indexer.tests'],
-        entry_points = {
-            'console_scripts':[
-                'dbpedia_indexer = indexer.run:runIndexer',
-                ]
-            },
-        test_suite = 'indexer.tests',
-        zip_safe = False
-        )
+  name='indexer',
+  version = version(),
+  description ='Indexer for dbpedia',
+  long_description = readme(),
+  classifiers = [
+    'Programming Language :: Python :: 3.5',
+  ],
+  url = 'https://github.com/ptorrest/indexer',
+  author = 'Pablo Torres',
+  author_email = 'pablo.torres.t@gmail.com',
+  license = 'GNU',
+  packages = ['indexer', 'indexer.tests'],
+  entry_points = {
+    'console_scripts':[
+      'dbpedia_indexer = indexer.run:runIndexer',
+    ]
+  },
+  test_suite = 'indexer.tests',
+  zip_safe = False
+)
 
