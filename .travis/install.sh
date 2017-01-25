@@ -3,6 +3,7 @@
 set -x -e
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+	rvm get stable # We need this since there is a bug in osx. See https://github.com/travis-ci/travis-ci/issues/6307
   os="MacOSX"
 else
   os="Linux"
