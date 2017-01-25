@@ -6,13 +6,12 @@ cache:
 matrix:
   include:
     - os: linux
-      dist: trusty
       python: 3.5
     - os: osx
       language: objective-c
       env: TRAVIS_PYTHON_VERSION=3.5 
 install:
-  - source .travis/install.sh
+  - .travis/install.sh
 script:
   - .travis/script.sh
 after_success:
