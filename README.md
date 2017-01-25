@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ptorrestr/indexer.svg?branch=master)](https://travis-ci.org/ptorrestr/indexer)
+
 Indexer
 =======
 
@@ -19,6 +21,15 @@ Testing
 You must include the binary `rdf2hdt` from HDT project in the `PATH` and maven. Both external services (ElasticSearch and NER) will be luanched when necessary. Please have in mind that testing can take a while.
 
 Testing can be done by: ``python setup.py test``
+
+### Local testing
+
+```
+conda-env create --file .conda/environment.yaml
+source activate indexer-test
+pytest
+```
+
 
 Execution
 ---------
