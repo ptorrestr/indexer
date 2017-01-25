@@ -10,8 +10,8 @@ matrix:
       compiler: gcc
       addons:
         apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: ['g++-4.9']
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-4.9']
     - os: osx
       language: objective-c
       env: TRAVIS_PYTHON_VERSION=3.5 
