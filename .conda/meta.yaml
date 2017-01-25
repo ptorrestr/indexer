@@ -15,7 +15,6 @@ requirements:
     - pyyaml
     - tqdm
     - pexpect
-    - jsonrpclib-pelix
     - t2db_objects >=0.7.6
     - hdtconnector >=0.2.2
   run:
@@ -26,7 +25,6 @@ requirements:
     - pyyaml
     - tqdm
     - pexpect
-    - jsonrpclib-pelix
     - t2db_objects >=0.7.6
     - hdtconnector >=0.2.2
 test:
