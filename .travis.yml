@@ -3,9 +3,6 @@ cache:
   directories:
     - "$HOME/.cache/pip"
     - "$HOME/.pyenv"
-addons:
-  hosts:
-    - srvgal102.deri.ie 140.203.155.240
 matrix:
   include:
     - os: linux
@@ -15,11 +12,18 @@ matrix:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-4.9']
+        hosts:
+          - srvgal102.deri.ie 140.203.155.240
+      services:
+        - docker
     - os: osx
       language: objective-c
-      env: TRAVIS_PYTHON_VERSION=3.5 
-services:
-  - docker
+      env: TRAVIS_PYTHON_VERSION=3.5
+      addons:
+        hosts:
+          - srvgal102.deri.ie 140.203.155.240
+      services:
+        - docker
 before_install:
   - .travis/before_install.sh
 install:
