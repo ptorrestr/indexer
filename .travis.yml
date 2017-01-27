@@ -20,6 +20,8 @@ matrix:
       env: TRAVIS_PYTHON_VERSION=3.5 
 services:
   - docker
+before_install:
+  - .travis/before_install.sh
 install:
   - .travis/install.sh
 before_script:

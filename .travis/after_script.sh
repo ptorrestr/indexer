@@ -8,3 +8,5 @@ for container_id in $containers; do
   docker rm $container_id
 done
 rm .containers
+rm .env
+docker volume rm testesdata
