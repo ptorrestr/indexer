@@ -3,5 +3,6 @@
 set -e -x
 
 export PATH="$HOME/miniconda/bin:$PATH"
-source activate test-environment
+source activate indexer-test
+source .env
 conda build -t .conda/
