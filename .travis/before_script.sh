@@ -3,6 +3,7 @@
 set -x -e
 
 DOCKER_URL=${DOCKER_URL:-`hostname -f`}
+docker -v
 cat ~/.docker/config.json | grep $DOCKER_URL \
 	|| docker login $DOCKER_URL -u $DOCKER_USER -p $DOCKER_PASSWORD
 echo "export NER_URL=\"http://$(hostname):8080/ner\"" > .env
