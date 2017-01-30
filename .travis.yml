@@ -17,11 +17,6 @@ matrix:
           packages: ['g++-4.9']
       services:
         - docker
-    - os: osx
-      language: objective-c
-      env: TRAVIS_PYTHON_VERSION=3.5
-      services:
-        - docker
 before_install:
   - .travis/before_install.sh
 install:
