@@ -12,7 +12,7 @@ echo "export ELASTICSEARCH_USER=elastic" >> .env
 echo "export ELASTICSEARCH_PASSWORD=changeme" >> .env
 docker run -d -p 9200:9200 \
 	-v testesdata:/usr/share/elasticsearch/data \
-	elasticsearch:5.1-alpine >> .containers
+	docker.elastic.co/elasticsearch/elasticsearch:5.1.2 >> .containers
 docker run -d -p 8080:8080 \
 	$DOCKER_URL/ner >> .containers
 docker ps
