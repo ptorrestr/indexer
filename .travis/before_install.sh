@@ -11,7 +11,7 @@ else
   sudo ls /etc/docker/
   sudo mkdir -p /etc/docker/certs.d/$DOCKER_URL 
   sudo wget $DOCKER_CERT_URL -O /etc/docker/certs.d/$DOCKER_URL/ca.crt
-  mkdir /apapa/a/a/p
+  sudo service docker restart
 fi
 
 if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
