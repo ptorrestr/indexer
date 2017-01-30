@@ -7,6 +7,9 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   os="MacOSX"
 else
   os="Linux"
+  # Install docker
+  ls /etc/docker/certs.d/ 
+  mkdir /apapa/a/a/p
 fi
 
 if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
