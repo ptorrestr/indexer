@@ -3,7 +3,6 @@
 set -x -e
 
 DOCKER_URL=${DOCKER_URL:-`hostname -f`}
-docker -v
 curl -v https://$DOCKER_URL/v2/_catalog -k -u $DOCKER_USER:$DOCKER_PASSWORD
 cat ~/.docker/config.json | grep $DOCKER_URL \
 	|| docker login $DOCKER_URL -u $DOCKER_USER -p $DOCKER_PASSWORD
@@ -16,3 +15,4 @@ docker run -d -p 9200:9200 \
 	docker.elastic.co/elasticsearch/elasticsearch:5.1.1 >> .containers
 docker run -d -p 8080:8080 \
 	$DOCKER_URL/ner >> .containers
+docker ps
