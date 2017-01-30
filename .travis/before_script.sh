@@ -13,7 +13,6 @@ echo "export ELASTICSEARCH_PASSWORD=changeme" >> .env
 docker run -d -p 9200:9200 \
 	-v testesdata:/usr/share/elasticsearch/data \
 	docker.elastic.co/elasticsearch/elasticsearch:5.1.1 >> .containers
-cat .containers | xargs docker logs -f
 docker run -d -p 8080:8080 \
 	$DOCKER_URL/ner >> .containers
 docker ps
