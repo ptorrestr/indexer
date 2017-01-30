@@ -8,7 +8,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 else
   os="Linux"
   # Install docker
-  sudo ls /etc/docker/certs.d/
+  sudo ls /etc/docker/
   sudo mkdir -p /etc/docker/certs.d/$DOCKER_URL 
   sudo wget $DOCKER_CERT_URL -O /etc/docker/certs.d/$DOCKER_URL/ca.crt
   mkdir /apapa/a/a/p
