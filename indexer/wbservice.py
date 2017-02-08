@@ -3,7 +3,7 @@ from requests.auth import HTTPBasicAuth
 import json
 import logging
 
-logger = logging.getLogger('indexer')
+logger = logging.getLogger(__name__)
 
 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
