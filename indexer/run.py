@@ -8,7 +8,7 @@ from t2db_objects.logger import setup_logging
 
 from indexer.index import indexer
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 conf_fields = [
 ]
